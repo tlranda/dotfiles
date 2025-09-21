@@ -1,8 +1,8 @@
 # Initialization
 
 Merge each file (prefixed with `.`) or directory with your existing installation
-at ${HOME}. (Ie: directories under .config/ should be linked, but files to handle
-${HOME} such as .bashrc can be symlinked into the home directory). You may need
+at `$HOME`. (Ie: directories under .config/ should be linked, but files to handle
+`$HOME` such as .bashrc can be symlinked into the home directory). You may need
 to install some/all software in subsequent steps before copying in all
 of the available configurations in this repository.
 
