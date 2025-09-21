@@ -1,0 +1,188 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "type": "auto",
+    "source": "~/.config/fastfetch/DokiAscii.txt",
+    "color": {
+        "1": "yellow"
+    }
+  },
+  "display": {
+      "separator": "",
+      "constants": [
+        // CONSTANT {$1} - COLOR BACKGROUND FOR KEY
+        "\u001b[48;2;43;43;69m",
+        // CONSTANT {$2} - COLOR BACKGROUND FOR OUTPUT
+        "\u001b[48;2;56;59;78m",
+        // CONSTANT {$3} - HORIZONTAL SPACERS for VALUES
+        "────────────────────────────────────────────────────────────────────────────────",
+        // CONSTANT {$4} - HORIZONTAL WHITESPACE for VALUES
+        "                                                                                ",
+        // CONSTANT {$5} - VERTICAL BARS AT START AND ?th CHARACTERS FORWARD AND BACKWARD
+        /*
+            90m = vertical bar color
+            whitespace in between |'s are offset by next number
+            Text setting for the area in whitespace is the last number
+         */
+        "\u001b[90m│                                                                                │\u001b[80D\u001b[39m",
+        // CONSTANT {$6} - HORIZONTAL SPACERS for KEYS
+        "────────────────────────────────",
+      ]
+    },
+  "modules": [
+    /*
+    "separator", "os", "packages", "de", "wm", "wmtheme", "theme", "icons", "font",
+    "cursor", "swap", "battery", "poweradapter", "locale", "break", "colors"
+    */
+      // CUSTOM - Top UI bar
+      {
+        "type": "custom",
+        "key": "{#90}{$1}╭{$6}╮",
+        "format": "{#90}{$2}╭{$3}╮"
+      },
+      {
+        "type": "title",
+        "key": "{#90}{$1}│ {#92}User                           {#90}│",
+        "format": "{$2}{$5}{user-name} {#2} {at-symbol-colored} {home-dir}"
+      },
+      {
+        "type": "datetime",
+        "key": "{#90}{$1}│ {#92}Datetime                       {#90}│",
+        "format": "{$2}{$5}{year}-{month-pretty}-{day-in-month} {#2}({weekday} {#2}[Wk {week}/52]) {$2}{hour-pretty}:{minute-pretty}:{second-pretty} {timezone-name}"
+      },
+      {                   
+        "type": "title",
+        "key": "{#90}{$1}│ {#93}Host                           {#90}│",
+        "format": "{$2}{$5}{#1}{#36}{host-name}"
+      },
+      {
+        "type": "host",
+        "key": "{#90}{$1}│ {#93}Machine                        {#90}│",
+        "format": "{$2}{$5}{name} {#2}{version} {#2}{family}"
+      },
+      {
+        "type": "os",
+        "key": "{#90}{$1}│ {#93}OS                             {#90}│",
+        "format": "{$2}{$5}{pretty-name} {codename} {#2}[v{version}] {#2}[{arch}]"
+      },
+      {
+        "type": "kernel",
+        "key": "{#90}{$1}│ {#93}Kernel                         {#90}│",
+        "format": "{$2}{$5}{sysname} {#2}[v{release}]"
+      },
+      {
+        "type": "uptime",
+        "key": "{#90}{$1}│ {#93}Uptime                         {#90}│",
+        "format": "{$2}{$5}{?days}{days} Days + {?}{hours}h:{minutes}m:{seconds}s"
+      },
+      {
+        "type": "board",
+        "key": "{#90}{$1}│ {#91}Board                          {#90}│",
+        "format": "{$2}{$5}{name} {#2}({version})"
+      },
+      {
+        "type": "cpu",
+        "key": "{#90}{$1}│ {#91}CPU                            {#90}│",
+        "showPeCoreCount": true,
+        "temp": true,
+        "format": "{$2}{$5}{name} {#2}[{cores-physical}-cores @ {freq-base} / {freq-max}] -- {temperature}"
+      },
+      {
+        "type": "cpucache",
+        "key": "{#90}{$1}│ {#91}{level} Cache                       {#90}│",
+        "format": "{$2}{$5}{result} {#2}"
+      },
+      {
+        "type": "gpu",
+        "key": "{#90}{$1}│ {#91}GPU                            {#90}│",
+        "detectionMethod": "auto",
+        "driverSpecific": true,
+        "temp": true,
+        "format": "{$2}{$5}{name} {#2}[{core-count} cores @ {frequency}] ({dedicated-used}/{dedicated-total}) -- {temperature}"
+      },
+      {
+        "type": "memory",
+        "key": "{#90}{$1}│ {#91}Memory                         {#90}│",
+        "format": "{$2}{$5}{used} / {total} ({percentage}{$2} {percentage-bar}{$2})"
+      },
+      {
+        "type": "swap",
+        "key": "{#90}{$1}│ {#91}Swap                           {#90}│",
+        "format": "{$2}{$5}{used} / {total} ({percentage}{$2} {percentage-bar}{$2})"
+      },
+      {
+        "type": "disk",
+        "key": "{#90}{$1}│ {#91}Disk                           {#90}│",
+        "format": "{$2}{$5}{size-used} / {size-total} ({size-percentage}{$2} {size-percentage-bar}{$2}) [{files-used} / {files-total} files]"
+      },
+      {
+        "type": "physicaldisk",
+        "temp": true,
+        "key": "{#90}{$1}│ {#91}{name:-20}           {#90}│",
+        "format": "{$2}{$5}{5} {$2}[{size} {4}] {?temperature}-- {temperature}{$2}"
+      },
+      {
+        "type": "terminal",
+        "key": "{#90}{$1}│ {#95}Terminal                       {#90}│",
+        "format": "{$2}{$5}{pretty-name} {#2}[v{version}] [PID:{pid}]"
+      },
+      {
+        "type": "terminalfont",
+        "key": "{#90}{$1}│ {#95}Font                           {#90}│",
+        "format": "{$2}{$5}{name} {#2}[{size}-pt]"
+      },
+      {
+        "type": "shell",
+        "key": "{#90}{$1}│ {#95}Shell                          {#90}│",
+        "format": "{$2}{$5}{pretty-name}  {#2}[v{version}] [PID:{pid}]"
+      },
+      {
+        "type": "monitor",
+        "key": "{#90}{$1}│ {#94}Monitor                        {#90}│",
+        "format": "{$2}{$5}{name} @ {refresh-rate} Hz {#2}({physical-width}x{physical-height} mm | {width}x{height} px) {#2}[{ppi} PPI]"
+      },
+      {
+        // localip IPv4
+        "type": "localip",
+        "key": "{#90}{$1}│ {#96}Local IPv4                     {#90}│",
+        "showPrefixLen": true,
+        "showIpv4": true,
+        "showIpv6": false,
+        "showMtu": true,
+        "format": "{$2}{$5}{ifname}: {ipv4}  {#2}[MTU:{mtu}]"
+      },
+      {
+        // localip IPv6
+        "type": "localip",
+        "key": "{#90}{$1}│ {#96}Local IPv6                     {#90}│",
+        "showPrefixLen": true,
+        "showIpv4": false,
+        "showIpv6": true,
+        "showMtu": true,
+        "format": "{$2}{$5}{ifname}: {ipv6}  {#2}[MTU:{mtu}]"
+      },
+      {
+        "type": "publicip",
+        "key": "{#90}{$1}│ {#96}Public IPv4                    {#90}│",
+        "ipv6": false,
+        "format": "{$2}{$5}{ip}  {#2}[{location}]"
+      },
+      {
+        "type": "publicip",
+        "key": "{#90}{$1}│ {#96}Public IPv6                    {#90}│",
+        "ipv6": true,
+        "format": "{$2}{$5}{ip}  {#2}[{location}]"
+      },
+      {
+        "type": "wifi",
+        "key": "{#90}{$1}│ {#96}Wi-Fi                          {#90}│",
+        "format": "{$2}{$5}[\ue672 {security}] {ssid} {$2}(Connection Quality: {signal-quality}{$2} {signal-quality-bar}{$2})"
+      },
+      // CUSTOM - Button UI bar
+      {
+        "type": "custom",
+        "key": "{#90}{$1}╰{$6}╯",
+        "format": "{#90}{$2}╰{$3}╯",
+      }
+    ]
+}

@@ -1,0 +1,7 @@
+[user]
+	email = YOUR_EMAIL
+	name = YOUR_NAME
+[core]
+    editor = vim
+[init]
+	defaultBranch = main

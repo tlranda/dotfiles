@@ -1,0 +1,16 @@
+{
+	"app_rename": {
+		"Gnome-terminal": "Terminal",
+        "firefox_firefox": "Firefox",
+        "org.gnome.Nautilus": "Nautilus"
+	},
+    "app_force_workspace": {
+        "obsidian": 1,
+        "firefox_firefox": 3,
+        "obs": 5,
+        "kdenlive": 5,
+        "steam": 5,
+        "Lutris": 5
+    }
+}
+
