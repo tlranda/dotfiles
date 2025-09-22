@@ -177,7 +177,7 @@ def main():
     # Subscribe to events
     i3.on("window::new", auto_assign_new_to_workspace)
     i3.on("window::move", rename)
-    i3.on("window::title", rename)
+    #i3.on("window::title", rename) # DISABLE -- no window titles seem to actually matter for this, maybe related to i3 hangs?
     i3.on("window::close", rename)
     i3.on("tick", tick_listener)
 
