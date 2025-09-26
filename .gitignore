@@ -2,4 +2,5 @@
 .bash_unsecret
 .gitconfig
 .config/i3/logs
+.config/i3/sleep_history.json
 .config/fastfetch/altconfigs

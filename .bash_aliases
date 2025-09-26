@@ -1,10 +1,17 @@
 echo "Source .bash_aliases"
+
+# There could be some aliases here but don't preserve other variables
+source ${HOME}/.bash_secret;
+source ${HOME}/.bash_unsecret;
+
 # General helps
 alias ls="ls --color=auto";
 alias i3class="xprop | grep WM_CLASS | awk '{ print \$4 }'";
 alias trackpad="${HOME}/./toggle_trackpad.sh";
 alias notes="pushd ${HOME}/Documents/Obsidian/Graduate && git pull && popd && pushd ${HOME}/Documents/Obsidian/Personal && git pull && popd";
 alias resource="source ~/.bashrc";
+alias actualbudget="flatpak run com.actualbudget.actual";
+alias heroic="flatpak run com.heroicgameslauncher.hgl";
 
 # Common typos for builtins
 sl() {

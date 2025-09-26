@@ -118,5 +118,13 @@ if ! shopt -oq posix; then
   fi
 fi
 
-export PATH="${PATH}:${HOME}/.local/bin"
+candidate_to_add_to_path=("${HOME}/.local/bin");
+for candidate in "${candidate_to_add_to_path[@]}"; do
+    if [[ "${PATH}" == *"${candidate}"* ]]; then
+        echo "Candidate ${candidate} ALREADY IN PATH";
+    else
+        export PATH="${PATH}:${candidate}";
+        echo "Add candidate ${candidate} to PATH";
+    fi;
+done;
 

@@ -16,6 +16,14 @@ logging.basicConfig(filename=base_path / "logs" / "special_dmenu_handler.log",
 
 # Get user's choice but allow intercepting it prior to fork for extra directives
 dmenu_path = subprocess.Popen(("dmenu_path"), stdout=subprocess.PIPE)
+# You can pipe a whole bunch of things together to get priority sorting into dmenu once you track choices
+# echo this list (as "#used, item" pairs) into:
+#    sort -r (invert order)
+#    awk '{printf("%d %s\n", $1 * FREQUENCY_WEIGHT + NR, $2)}' (add list-order as tiebreaker, but multiply usage amount as 1M in aario/dmenu -- I think FREQ_WEIGHT >= len(list) is sufficient
+#    sort -n -r (un-invert order but sort numerically based on weight key)
+#    awk '{print $NF}' (print just the items, now in sorted order)
+#
+# Dmenu will preserve the sorting order as it prunes items down
 choice = subprocess.check_output(("dmenu"), stdin=dmenu_path.stdout).decode('utf-8').rstrip()
 
 # Look for colon at the end of program name to signify a workspace identifier
