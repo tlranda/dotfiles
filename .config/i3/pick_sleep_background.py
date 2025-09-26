@@ -15,7 +15,7 @@ import time
 from collections import OrderedDict
 
 default_base_path = pathlib.Path(os.getenv('HOME')) / '.config' / 'i3'
-default_log_path = default_base_path / "logs" / "pick_sleep_background.log",
+default_log_path = default_base_path / "logs" / "pick_sleep_background.log"
 default_config_path = default_base_path / "sleep_history.json"
 
 # i3lock only supports PNGs
@@ -35,7 +35,7 @@ logconfig = {
 }
 if len(sys.argv) == 1:
     # Normal run w/o arguments set
-    logging.basicConfig(filename=default_config_path
+    logging.basicConfig(filename=default_log_path,
                         **logconfig)
 else:
     # Interactive run should log to stdout and show ALL debug output
@@ -72,7 +72,7 @@ def load_history(expect_history):
     if not expect_history.exists():
         logger.info(f"No history / configuration at {expect_history}, initializing as blank")
         # Empty JSON equivalent with reasonable suggestion for default path
-        history = init_history()
+        history = init_history(expect_history)
     else:
         logger.info(f"Loading history / configuration from {expect_history}")
         with open(expect_history, 'r') as jsonf:
@@ -289,7 +289,7 @@ def require_simultaneously_set_and_equal_length(args, *argnames):
     if all([_ is None for _ in attrs]) or all([len(_) == 0 for _ in attrs]):
         # All empty -- OK
         return
-    if None in attrs or 0 in map(len, attrs)):
+    if None in attrs or 0 in map(len, attrs):
         raise ValueError(f"Must give EQUAL number of arguments to all paired arguments: {', '.join(argnames)}")
 
     # Flatten multiple arg groups in order they are given
@@ -336,6 +336,7 @@ def parse(args=None, prs=None):
 
 if __name__ == '__main__':
     args = parse()
+    logger.info("Starting pick_sleep_background.py with args {args}")
 
     # User requests new config file
     if args.init:
