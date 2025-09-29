@@ -128,6 +128,12 @@ def set_weights(history, base_path):
     for key in remove_keys:
         del history['images'][key]
 
+    # Filter any hard omits out
+    for key, value in history['images'].items():
+        if value['omit'] and key in hist_sort:
+            logger.info(f"Omit key '{key}' due to hard-omit flag")
+            del hist_sort[key]
+
     # Add any new keys
     original_keyweight_len = len(keyweights)
     added_keys = list()
@@ -163,13 +169,13 @@ def set_weights(history, base_path):
     # frequency-weight-multiplier = (A*|keyweights|)
     # frequency-weight-multiplier / |keyweights| = A
     alpha = history['frequency-weight-multiplier'] / len(keyweights)
-    apex = (alpha*len(keyweights))*(-1*alpha+2*len(keyweights))
+    # Simplified apex plug-in-chug: -1x+B == B/2 for the vertex
+    vertex = alpha*len(keyweights)*len(keyweights)
     # Postmortem update extra weights based on max quadratic added factor + configured weight adjustment for new image
-    newkey_weight_update = apex
-    if newkey_weight_update > 0:
+    if vertex > 0:
         for key in added_keys:
-            logger.debug(f"Fix NEW image keyweight for '{key}' by adding weight {newkey_weight_update}")
-            keyweights[key] += newkey_weight_update
+            logger.debug(f"Fix NEW image keyweight for '{key}' by adding weight {vertex}")
+            keyweights[key] += vertex
 
     # Sort last-access oldest->newest as linear weight to prioritize OLD
     inv_lkeys = list([v['last-access'] for v in history['images'].values()])
@@ -185,7 +191,7 @@ def set_weights(history, base_path):
 
         # Plug into quadratic formula to get extra weight from frequency
         # x = idx
-        extra_weight = (alpha*idx)*(-1*alpha+beta)
+        extra_weight = (alpha*idx)*(-1*idx+beta)
 
         logger.debug(f"Add weight {extra_weight} to key '{keyweight_key}' based on last-access {key}")
         keyweights[keyweight_key] += extra_weight
@@ -203,12 +209,6 @@ def set_weights(history, base_path):
             continue
         logger.debug(f"Set weight for key '{inv_kkeys[value_idx]}' = {value}")
         hist_sort[inv_kkeys[value_idx]] = value
-
-    # Filter hard omits out
-    for key, value in history['images'].items():
-        if value['omit'] and key in hist_sort:
-            logger.info(f"Omit key '{key}' due to hard-omit flag")
-            del hist_sort[key]
 
     return history, hist_sort
 
@@ -321,7 +321,7 @@ def parse(args=None, prs=None):
 
     if args.index is not None:
         # Have to be relative to config's base path -- FileNotFoundError later if not found
-        args.index = list(itertools.chain.from_iterable(args.index))
+        args.index = flatten_arg(args.index)
 
     require_simultaneously_set_and_equal_length(args, 'penalize_images','penalize_weights')
     if args.penalize_images is not None or args.penalize_weights is not None:
@@ -336,7 +336,7 @@ def parse(args=None, prs=None):
 
 if __name__ == '__main__':
     args = parse()
-    logger.info("Starting pick_sleep_background.py with args {args}")
+    logger.info(f"Starting pick_sleep_background.py with args {args}")
 
     # User requests new config file
     if args.init:
