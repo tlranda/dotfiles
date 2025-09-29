@@ -5,7 +5,6 @@ source ${HOME}/.bash_secret;
 source ${HOME}/.bash_unsecret;
 
 # General helps
-alias ls="ls --color=auto";
 alias i3class="xprop | grep WM_CLASS | awk '{ print \$4 }'";
 alias trackpad="${HOME}/./toggle_trackpad.sh";
 alias notes="pushd ${HOME}/Documents/Obsidian/Graduate && git pull && popd && pushd ${HOME}/Documents/Obsidian/Personal && git pull && popd";
