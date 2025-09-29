@@ -26,12 +26,12 @@ dmenu_path = subprocess.Popen(("dmenu_path"), stdout=subprocess.PIPE)
 # Dmenu will preserve the sorting order as it prunes items down
 choice = subprocess.check_output(("dmenu"), stdin=dmenu_path.stdout).decode('utf-8').rstrip()
 
-# Look for colon at the end of program name to signify a workspace identifier
-if ':' not in choice:
+# Look for keycharacter at the end of program name to signify a workspace identifier
+if '@' not in choice:
     monitor_signal = None
     program = choice
 else:
-    program, monitor_signal = choice.rsplit(':',1)
+    program, monitor_signal = choice.rsplit('@',1)
     if monitor_signal != "":
         monitor_signal = " "+monitor_signal
 logger.debug(f"Dmenu selects program '{program}' with monitor signal value '{monitor_signal}'")
