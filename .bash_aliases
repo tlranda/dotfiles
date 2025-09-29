@@ -12,6 +12,11 @@ alias notes="pushd ${HOME}/Documents/Obsidian/Graduate && git pull && popd && pu
 alias resource="source ~/.bashrc";
 alias actualbudget="flatpak run com.actualbudget.actual";
 alias heroic="flatpak run com.heroicgameslauncher.hgl";
+# Improved screenshot goes to clipboard AND os
+screenshot() {
+    local PICTURE="${HOME}/Pictures/Screenshots/$(date).png";
+    maim $@ "${PICTURE}" && xclip -selection clipboard -t image/png -i "${PICTURE}";
+}
 
 # Common typos for builtins
 sl() {
