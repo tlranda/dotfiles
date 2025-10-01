@@ -9,13 +9,81 @@ alias i3class="xprop | grep WM_CLASS | awk '{ print \$4 }'";
 alias trackpad="${HOME}/./toggle_trackpad.sh";
 alias notes="pushd ${HOME}/Documents/Obsidian/Graduate && git pull && popd && pushd ${HOME}/Documents/Obsidian/Personal && git pull && popd";
 alias resource="source ~/.bashrc";
-alias actualbudget="flatpak run com.actualbudget.actual";
-alias heroic="flatpak run com.heroicgameslauncher.hgl";
+
 # Improved screenshot goes to clipboard AND os
 screenshot() {
     local PICTURE="${HOME}/Pictures/Screenshots/$(date).png";
     maim $@ "${PICTURE}" && xclip -selection clipboard -t image/png -i "${PICTURE}";
 }
+
+# Basic access to Steam library without running the windowed application
+list-steam-games() {
+    find ~/snap/steam/common/.local/share/Steam/steamapps/ -name "*.acf" -exec \
+        awk -F '"' '/"appid|name/{ printf $4 "|" } END { print "" }' {} \;
+}
+find-steam-game() {
+    if [[ $# -ne 1 ]]; then
+        echo "USAGE: find-steam-game <grep-able part of name (case INsensitive)>";
+        return;
+    fi;
+    list-steam-games | column -t -s '|' | sort -k 2 | grep -i "$1";
+}
+launch-steam-game() {
+    if [[ $# -ne 1 ]]; then
+        echo "USAGE: launch-steam-game <grep-able part of name (case IN sensitive)>";
+        return;
+    fi;
+    game_match=`find-steam-game "$1"`;
+    n_games=`echo -e "$game_match" | wc -l`;
+    if [[ ${n_games} -eq 0 ]]; then
+        echo "Could not find your game. Available games:";
+        list-steam-games;
+    else if [[ ${n_games} -gt 1 ]]; then
+        echo "Ambiguous response (found ${n_games} games). Please narrow down between these options:";
+        echo "${game_match}";
+    else
+        echo "Found your game: $game_match";
+        game_id=`echo "${game_match}" | awk '{ print $1 }'`;
+        echo "ID: ${game_id}";
+        steam -applaunch ${game_id};
+    fi;
+    fi;
+}
+
+# Basic access to Flatpak library similar to Steam above
+list-flatpak-apps() {
+    flatpak list | tail -n +1 | awk '{print "|" $1 "|" $2 "|"}' | grep -E "\|((com)|(org))\.";
+}
+find-flatpak-app() {
+    if [[ $# -ne 1 ]]; then
+        echo "USAGE: find-flatpak-app <grep-able part of name (case INsensitive)>";
+        return;
+    fi;
+    list-flatpak-apps | column -t -s '|' | sort -k 2 | grep -i "$1";
+}
+launch-flatpak-app() {
+    if [[ $# -ne 1 ]]; then
+        echo "USAGE: launch-flatpak-app <grep-able part of name (case IN sensitive)>";
+        return;
+    fi;
+    app_match=`find-flatpak-app "$1"`;
+    n_apps=`echo -e "$app_match" | wc -l`;
+    if [[ ${n_apps} -eq 0 ]]; then
+        echo "Could not find your app. Available apps:";
+        list-flatpak-apps;
+    else if [[ ${n_apps} -gt 1 ]]; then
+        echo "Ambiguous response (found ${n_apps} apps). Please narrow down between these options:";
+        echo "${app_match}";
+    else
+        echo "Found your app: ${app_match}";
+        app_id=`echo "${app_match}" | awk '{ print $2 }'`;
+        echo "ID: ${app_id}";
+        flatpak run $app_id;
+    fi;
+    fi;
+}
+alias actualbudget="flatpak run com.actualbudget.actual";
+alias heroic="flatpak run com.heroicgameslauncher.hgl";
 
 # Common typos for builtins
 sl() {
