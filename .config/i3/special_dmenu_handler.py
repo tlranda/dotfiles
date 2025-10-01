@@ -1,3 +1,4 @@
+import copy
 import datetime
 import json
 import logging
@@ -72,12 +73,29 @@ def populate_options():
                     continue
                 logger.info(f"Inject name '{new_name.rstrip()}' from '{fname}'")
                 dmenu_choices.append(new_name)
-    if save_settings:
-        with open(config_path, 'w') as f:
-            json.dump(settings, f, indent=1)
+
+    # Remove any remove-list items
+    print("".join(dmenu_choices))
+    if 'dmenu_remove' in settings:
+        logger.debug(f"Removing entries from dmenu choices based on settings['dmenu_remove']: {settings['dmenu_remove']}")
+        for entry in settings['dmenu_remove']:
+            entry_ = entry+'\n'
+            if entry_ in dmenu_choices:
+                dmenu_choices.remove(entry_)
+
+    # Let's try recency bias first (no timestamps, just order of usage)
+    if 'dmenu_recency' in settings:
+        reinclude = list()
+        for entry in settings['dmenu_recency']:
+            entry_ = entry+'\n'
+            if entry_ in dmenu_choices:
+                reinclude.append(entry_)
+                dmenu_choices.remove(entry_)
+            # Could tidy up settings['dmenu_recency'] if you want to, but I think not for now
+        logger.debug(f"Promote names ({reinclude}) due to recency")
+        dmenu_choices = reinclude + dmenu_choices
 
     # TODO: Add history of selections to prioritize most-recent/frequent prefix
-
     # You can pipe a whole bunch of things together to get priority sorting into dmenu once you track choices
     # echo this list (as "#used, item" pairs) into:
     #    sort -r (invert order)
@@ -89,12 +107,16 @@ def populate_options():
     # Join
     dmenu_choices = "".join(dmenu_choices)
 
+    if save_settings:
+        with open(config_path, 'w') as f:
+            json.dump(settings, f, indent=1)
+
     choice = subprocess.check_output(("dmenu"), input=dmenu_choices, text=True).rstrip()
     return choice
 
 def process_choice(choice):
     # Default everything to None
-    program = args = signal = None
+    program = recency_program = args = signal = None
 
     # Regex doesn't do the split the way I want, so implement my own split here
     arg_split = None
@@ -124,6 +146,34 @@ def process_choice(choice):
     else:
         program = choice
 
+    recency_program = program
+
+    if args is not None:
+        args = args.split(' ')
+
+    # Some programs need to be executed within a terminal for you to observe what happens
+    if 'requires_terminal' in settings and program in settings['requires_terminal']:
+        args = "'"+" ".join(args)+"'"
+        if args is None:
+            _args = copy.copy(settings['terminal_args'])
+            if 'terminal_preuser_args' in settings:
+                _args += [settings['terminal_preuser_args']]
+                _args[-1] += program
+            else:
+                _args += [program]
+            args = _args
+        else:
+            _args = copy.copy(settings['terminal_args'])
+            if 'terminal_preuser_args' in settings:
+                _args += [settings['terminal_preuser_args']+program+" "+args]
+            else:
+                _args += [program+" "+args]
+            args = _args
+        if 'terminal_postuser_args' in settings:
+            args[-1] += settings['terminal_postuser_args']
+        program = settings['terminal']
+        logger.debug(f"Prepare shell command due to requiring terminal: {args}")
+
     # Tidy up with validation
     if signal is not None:
         try:
@@ -134,13 +184,10 @@ def process_choice(choice):
             logger.error(f"Could not convert indicated monitor signal (via @) '{signal}' to integer")
             signal = ""
 
-    if args is not None:
-        args = args.split(' ')
-
     logger.debug(f"Dmenu selects program '{program}' with monitor signal value '{signal}' and arguments '{args}'")
-    return signal, program, args
+    return signal, program, recency_program, args
 
-def launch(signal, program, args):
+def launch(signal, program, recency_program, args):
     # Send message to automanager via tick
     if signal is not None:
         automanager_signal = f"automanager::force_workspace{signal}"
@@ -148,13 +195,26 @@ def launch(signal, program, args):
         status = subprocess.run(("i3-msg", "-t", "send_tick", automanager_signal))
         if status.returncode != 0:
             logger.error(status.returncode)
+    # Update recency settings
+    if 'dmenu_recency' not in settings:
+        settings['dmenu_recency'] = list()
+    if recency_program in settings['dmenu_recency']:
+        settings['dmenu_recency'].remove(recency_program)
+    settings['dmenu_recency'].insert(0,recency_program)
+    with open(config_path, 'w') as f:
+        json.dump(settings, f, indent=1)
+
     # Form program with arguments
     if args is not None:
         program = [program]
         program.extend(args)
     # Run program as expected and exit this process
     logger.info(f"Launch program '{program}'")
-    subprocess.Popen(program).detach()
+    proc = subprocess.Popen(program)
+    # If these aren't the same, it's a terminal that will execvp or something;
+    # You can only detach if you own the process ID created by the program!
+    if program == recency_program:
+        proc.detach()
 
 if __name__ == '__main__':
     global settings

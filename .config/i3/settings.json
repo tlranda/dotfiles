@@ -14,15 +14,21 @@
  },
  "dmenu_injection": {
   "~/.bash_aliases": {
-   "last-modified": "2025-09-29 12:14:11",
+   "last-modified": "2025-09-30 17:19:44",
    "names": [
     "i3class",
     "trackpad",
     "notes",
     "resource",
+    "screenshot",
+    "list-steam-games",
+    "find-steam-game",
+    "launch-steam-game",
+    "list-flatpak-apps",
+    "find-flatpak-app",
+    "launch-flatpak-app",
     "actualbudget",
     "heroic",
-    "screenshot",
     "sl",
     "ssh-find",
     "ssh-killagent",
@@ -33,13 +39,42 @@
     "folder-usage"
    ],
    "non-import": [
-     "resource",
-     "ssh-find",
-     "ssh-killagent",
-     "ssh-startagent",
-     "ssh-reconnect",
-     "ssh-auth"
+    "resource",
+    "ssh-find",
+    "ssh-killagent",
+    "ssh-startagent",
+    "ssh-reconnect",
+    "ssh-auth"
    ]
   }
- }
+ },
+ "dmenu_remove": [
+  "["
+ ],
+ "dmenu_recency": [
+  "nautilus",
+  "screenshot",
+  "list-steam-games",
+  "firefox"
+ ],
+ "terminal": "gnome-terminal",
+ "terminal_args": [
+  "--",
+  "bash",
+  "-ic"
+ ],
+ "terminal_preuser_args": "clear; ",
+ "terminal_postuser_args": "; echo -e \"\\nPRESS ENTER TO CLOSE\"; read line",
+ "requires_terminal": [
+  "list-steam-games",
+  "find-steam-game",
+  "launch-steam-game",
+  "list-flatpak-apps",
+  "find-flatpak-app",
+  "launch-flatpak-app",
+  "who-is-on",
+  "folder-usage",
+  "notes",
+  "screenshot"
+ ]
 }
