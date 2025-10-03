@@ -14,13 +14,14 @@
  },
  "dmenu_injection": {
   "~/.bash_aliases": {
-   "last-modified": "2025-09-30 17:19:44",
+   "last-modified": "2025-10-03 14:11:58",
    "names": [
     "i3class",
     "trackpad",
     "notes",
     "resource",
     "screenshot",
+    "clipboardshot",
     "list-steam-games",
     "find-steam-game",
     "launch-steam-game",
@@ -52,10 +53,15 @@
   "["
  ],
  "dmenu_recency": [
+  "clipboardshot",
   "nautilus",
+  "firefox",
+  "obsidian",
+  "audacity",
+  "launch-steam-game",
   "screenshot",
-  "list-steam-games",
-  "firefox"
+  "snap-store",
+  "list-steam-games"
  ],
  "terminal": "gnome-terminal",
  "terminal_args": [
@@ -75,6 +81,7 @@
   "who-is-on",
   "folder-usage",
   "notes",
-  "screenshot"
+  "screenshot",
+  "clipboardshot"
  ]
 }

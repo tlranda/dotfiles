@@ -6,15 +6,11 @@ source ${HOME}/.bash_unsecret;
 
 # General helps
 alias i3class="xprop | grep WM_CLASS | awk '{ print \$4 }'";
-alias trackpad="${HOME}/./toggle_trackpad.sh";
+alias trackpad="${HOME}/Tools/./toggle_trackpad.sh";
 alias notes="pushd ${HOME}/Documents/Obsidian/Graduate && git pull && popd && pushd ${HOME}/Documents/Obsidian/Personal && git pull && popd";
 alias resource="source ~/.bashrc";
-
-# Improved screenshot goes to clipboard AND os
-screenshot() {
-    local PICTURE="${HOME}/Pictures/Screenshots/$(date).png";
-    maim $@ "${PICTURE}" && xclip -selection clipboard -t image/png -i "${PICTURE}";
-}
+alias screenshot="${HOME}/Tools/./screenshot.sh";
+alias clipboardshot="${HOME}/Tools/./screenshot-clipboard-only.sh";
 
 # Basic access to Steam library without running the windowed application
 list-steam-games() {
