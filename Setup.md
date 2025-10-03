@@ -150,6 +150,84 @@ NOTE: Set this up AFTER configuring flatpak
 4.1) Make sure the port is permitted in the ufw firewall
 5) Configure or import your data
 
+### Ollama
+
+For LLMs running locally
+
+1) Fetch your local installer from [the website](https://ollama.com/download)
+2) Ensure that 11434/tcp has a hole in UFW firewall (if applicable)
+3) For AMDGPU support in Ollama, you will need to [download the AMD Linux drivers](https://www.amd.com/en/support/download/linux-drivers.html) and set up the [AMDGPU-Install](https://amdgpu-install.readthedocs.io/en/latest/install-overview.html) script on your machine. This will involve one reboot.
+4) Assuming you continue to run ollama via the service, you may need to root-edit the /etc/systemd/system/ollama.service to add new "Environment=" lines to pass in various overrides and settings (if the system cannot detect them properly -- you'll see the errors/suggestions in the journalctl entries by following it and restarting the service)
+5) Per expectations, small LLMs that fit on a single GPU can return results in tractable/useful time but are lobotomized child levels of intellect. Larger models are more intelligent but may be unable to run on GPU or just run very very slowly.
+
+### AnythingLLM
+
+For easier access to text-embedding and RAG. Note that at the last time of inspection, AnythingLLM can ONLY embed documents of the following filetypes: txt,md,docx,pdf, py,js,html,css, csv,json.
+
+1) Download the installer as instructed on [the website](https://anythingllm.com/desktop)
+2) You may need to `sudo chown root:root anythingllm-desktop/chrome-sandbox; sudo chmod 4755 anythingllm-desktop/chrome-sandbox` for Ubuntu's sandboxing rules to permit the app to run.
+3) Connect AnythingLLM to your local LLM runner (I used Ollama, you can install other tools it indicates support for if you please)
+
+### CopyParty
+
+For filesharing locally
+
+1) Download the copyparty python file [from the GitHub releases](https://github.com/9001/copyparty/)
+2) Place it in your desired directory (ie: /mnt/Shareable)
+3) Set up a copyparty config similar to the following:
+```
+# File: ~/.config/copyparty/my\_party\_config.conf
+
+# not actually YAML but pretend for syntax highlighting
+# -*- mode: yaml -*-
+# vim: ft=yaml:
+
+# Arguments for commandline
+[global]
+    e2ts   # Enable multimedia indexing
+    qr     # Enable QRCode
+    #e2dsa # Enable file indexing and filesystem scanning
+
+# Create users
+[accounts]
+    tlranda: <PASSWORD GOES HERE>
+    guest:   <PASSWORD GOES HERE>
+
+# Create vomes
+[/] # Webroot location 'root'
+    /mnt/Shareable # Shares content of this local directory
+    accs:
+        # Guest user has read access, I have read/write/modify/delete
+        r: guest
+        rwmd: tlranda
+
+# You can make separate permissions by doing something like the following
+[/GuestUploads]
+    ./GuestUploads
+    accs:
+        rwmd: tlranda
+        wG: * # G for GET, anyone can upload but only sees their own uploads
+    flags:
+        nodupe # Reject duplicate uploads
+        e2d    # Enable uploads database
+
+```
+4) When you want the server to run, PRTY_CONFIG=~/.config/copyparty/my_party_config.conf python3 copyparty-sfx.py
+5) Set a hole in the firewall for copyparty: ufw allow 3923/tcp
+6) Use the QRCode to log into the server (localhost:3923) using an accepted account
+
+### Jellyfin
+
+Used for media serving from the CopyParty-hosted directories, as CopyParty cannot stream video well
+
+1) Install via the curl | sh pattern or other relevant [installer from the website](https://jellyfin.org/downloads/server
+2) Punch the UFW hole required for service: ufw allow 8096/tcp
+3) Visit localhost:8096 to continue setting up via the wizard
+3.1) Save your admin user/pass in password manager or something!
+3.2) You should ensure the fully filepath to desired host-folders are set to permissions 755 for Jellyfin to properly index them!
+
+Later: You can install official clients for various devices [from the website if you please](https::/jellyfin.org/downloads)
+
 ## Via Snap Apps
 
 Install via snap-store or `snap install` in terminal
