@@ -33,10 +33,24 @@ def update_dmenu_settings(fname, fpath):
 def populate_options():
     # Get user's choice but allow intercepting it prior to fork for extra directives
     # Pass in my os.environ to hopefully include directories I add to PATH
+    if 'dmenu_path_addition' in settings:
+        existing_path = os.environ["PATH"]
+        for name in settings['dmenu_path_addition']:
+            parts = list(pathlib.Path(name).parts)
+            if parts[0] == '~':
+                parts[0] = os.environ["HOME"]
+            if len(parts) > 1:
+                name = pathlib.Path(parts[0]).joinpath(*parts[1:])
+            else:
+                name = parts[0]
+            if str(name) not in existing_path:
+                existing_path += f":{name}"
+        os.environ["PATH"] = existing_path
     dmenu_path = subprocess.Popen(("dmenu_path"), stdout=subprocess.PIPE, env=os.environ)
     dmenu_choices = dmenu_path.stdout
 
     dmenu_choices = [_.decode('utf-8') for _ in dmenu_choices.readlines()]
+
     # Injection from settings
     # NOTE: You have to manually delete the dmenu_path cache file and run in your own terminal (with updated PATH) to refresh any directories indicated by PATH
     save_settings = False
@@ -228,6 +242,13 @@ if __name__ == '__main__':
     with open(config_path,"r") as f:
         settings = json.load(f)
     logger.info(f"Settings loaded: {settings}")
+    if 'clear_dmenu_cache' in settings and settings['clear_dmenu_cache']:
+        cached_path = pathlib.Path(os.environ['HOME']).joinpath('.cache','dmenu_run')
+        try:
+            cached_path.unlink()
+            logger.info(f"Cleared dmenu_path cache at '{cache_path}'")
+        except:
+            logger.error(f"Tried to unlink dmenu_path cache at '{cached_path}', but failed")
 
     launch(*process_choice(populate_options()))
 

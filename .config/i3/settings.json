@@ -12,6 +12,9 @@
   "steam": 5,
   "Lutris": 5
  },
+ "dmenu_path_addition": [
+  "~/.local/bin"
+ ],
  "dmenu_injection": {
   "~/.bash_aliases": {
    "last-modified": "2025-10-03 14:11:58",
@@ -53,12 +56,14 @@
   "["
  ],
  "dmenu_recency": [
-  "clipboardshot",
-  "nautilus",
   "firefox",
+  "nautilus",
+  "steam",
+  "tagstudio",
+  "clipboardshot",
+  "launch-steam-game",
   "obsidian",
   "audacity",
-  "launch-steam-game",
   "screenshot",
   "snap-store",
   "list-steam-games"
