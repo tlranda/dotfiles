@@ -22,23 +22,27 @@ without extra modification once all relevant software is installed.
 2) sudo apt install gnome-software-plugin-flatpak
 3) flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
-Now you can `flatpak install ${NAME}.flatpak for applications distributed in that manner.
+Now you can `flatpak install ${NAME}.flatpak` for applications distributed in that manner.
 
 ### Piper
 
 Allows configuring mouse RBG etc on Linux
 
+1) sudo apt install piper
+2) piper
+3) Under the LEDs tab, you can disable them now! Profile should load upon login but might not remain loaded if you log out (ie: idling while logged out or during boot -- most mice will turn off LEDs if logged out AND the system is sleeping)
+
 ### OpenSSH
 
 Allows connecting to the device over SSH
 
-* Package manager install openssh-server
-* sudo service ssh start
-* sudo systemctl enable ssh
+1) Package manager install openssh-server
+2) sudo service ssh start
+3) sudo systemctl enable ssh
 
 If connection times out, probably firewall related:
-* sudo ufw allow ssh
-* sudo ufw enable
+1) sudo ufw allow ssh
+2) sudo ufw enable
 
 ### Ruby
 
@@ -46,29 +50,31 @@ Part of Jekyll builds for websites
 
 1) sudo apt install ruby ruby-dev
 2) Within website directory: sudo bundle install
-2.1) If step 3 fails: sudo bundle add webrick
-2.1.1) If this fails, delete webrick from the Gemfile, uninstall your bundle and reinstall it (sudo bundle clean --force; sudo bundle install; sudo bundle add webrick)
+* If step 2 fails: sudo bundle add webrick
+* If this fails, delete webrick from the Gemfile, uninstall your bundle and reinstall it (sudo bundle clean --force; sudo bundle install; sudo bundle add webrick)
 3) Serve website: bundle exec jekyll serve (should open on localhost:4000)
 
 ### Fastfetch
 
 Fancy way to show off system configuration
 
+1) Package manager install fastfetch
+2) Copy .config/fastfetch files into ${HOME}/.config/fastfetch
+3) fastfetch and enjoy!
+
 ### i3
 
 Customizable window manager
 
-* Copy .config/i3 files into ${HOME}/.config/i3 after basic setup is present
-* Ensure you have installed Python3 and the i3ipc package for python scripts to work
+1) Copy .config/i3 files into ${HOME}/.config/i3 after basic setup is present
+2) Ensure you have installed Python3 and the i3ipc package for python scripts to work
 
 ## Via External
 
 ### Firefox
 
 1) [Install Firefox on your system if it isn't already installed](https://www.firefox.com/en-US/)
-
 2) Login to Firefox Sync for passwords, extensions, etc
-
 3) Configure extensions (usually opening them once is enough to sync settings)
 
 ### Lutris
@@ -78,13 +84,9 @@ NOTE: Set this up AFTER configuring Steam
 0) Install wine from your package manager. Lutris can install other wine versions itself, but the default one is often more stable to get things off the ground.
   + You may need to add 32-bit support to your package manager for 32-bit support (dpkg --add-architecture i386)
   + Also install winetricks to go along with things that require "Mono" etc
-
 1) [Download lutris from the web](lutris.net/downloads)
-
 2) Run your package manager to install locally (some package managers can handle the download for you).
-
 3) Connect to Steam and retrieve games. If you fail to retrieve games, it may be because your steam profile is private.
-
 4) Connect to Epic and retrieve games.
 
 ### Heroic
@@ -92,20 +94,18 @@ NOTE: Set this up AFTER configuring Steam
 NOTE: Set this up AFTER configuring flatpak
 
 1) Install via flatpak from their website
+2) Log in on EGS/GOG/Prime accounts
+3) Install/manage/play games
 
 ### Sunshine
 
 1) [Download latest GitHub release](https://github.com/LizardByte/Sunshine/releases)
-
 2) Add packages as needed (`apt-get install miniupnpc libminiupnpc17`)
   + https://github.com/unicode-org/icu/releases/tag/release-70-1
   + May have to manually toss these files into their respective directories in /usr/local
   + sudo ldconfig to reload cache
-
 3) Install `sudo dpkg -i <sunshine*.deb>`
-
-4) Visit localhost:47990 in your browser to configure your username and password. Save them!
-
+4) Visit localhost:47990 in your browser to configure your username and password. Save them! I don't recommend punching a hole into the firewall for this, but you can.
 5) You should be able to log in to the proper portal for Sunshine now and set up client connections
 
 ### Davinci Resolve
@@ -117,29 +117,22 @@ NOTE: Set this up AFTER configuring flatpak
   + libglib2.0-0
   + libxcb-composite0
   + libxcb-xinput0
-
 1) [Install from BlackMagicDesign](https://www.blackmagicdesign.com/products/davinciresolve)
-
 2) Unzip the file, then chmod +x the .run file
-
 3) sudo ./DavinciResolve\*.run -i
-
 4) You may retrieve [help from this post](https://www.dedoimedo.com/computers/davinci-resolve-ubuntu-24-04.html) if you run into additional errors
-
-5) As of now, my install is nonfunctional (looks like changes to glibc from years ago are either not supported or they rely on things that were deprecated. I'm not sure)
-
-6) It should run out of /opt/resolve/bin, you'll want to add that to PATH for it to be properly selectable as resolve.
+5) You may need to install [libpango etc as demonstrated here](ttps://stackoverflow.com/questions/78368455/davinci-resolve-19-0b1-will-not-start-on-ubuntu-24-04)
+6) As of now, my install is nonfunctional. It looks like AMD GPUs require the pro drivers which are not always super happy on my system.
+7) It should run out of /opt/resolve/bin, you'll want to add that to PATH for it to be properly selectable as resolve.
 
 ### TagStudio
 
 1) Fetch the [latest release from GitHub](https://github.com/TagStudioDev/TagStudio/releases)
 2) Unzip the tarfile and run the client
-2.1) You may need to install ffmpeg
-2.2) Optional: It seems that TagStudio can use `ripgrep` for faster indexing if you install it.
-3) I configure the settings (File-\>Settings) to disable opening library on start and use date format YYYY-MM-DD
-4) Move the entire install folder into ${HOME}/.local/bin (it needs to have its "\_internal" folder moved with it, then link it for accessibility (ln -s tagstudio\_install/tagstudio tagstudio)
-5) TODO: Fix integration with dmenu\_path so that it is pickable
-    + Seems that Ubuntu may interfere with properly seeing PATH updates from .profile etc, [I haven't tried this fix yet](https://github.com/i3/i3/discussions/5928)
+* You may need to install ffmpeg
+* Optional: It seems that TagStudio can use `ripgrep` for faster indexing if you install it.
+4) I configure the settings (File-\>Settings) to disable opening library on start and use date format YYYY-MM-DD
+5) Move the entire install folder into ${HOME}/.local/bin (it needs to have its "\_internal" folder moved with it, then link it for accessibility (ln -s tagstudio\_install/tagstudio tagstudio)
 
 ### Actual Budget
 
@@ -147,7 +140,7 @@ NOTE: Set this up AFTER configuring flatpak
 2) flatpak install Actual-linux-x86_64.flatpak
 3) You may need to look up where the executable is (flatpak info --show-location com.actualbudget.actual) and then run it
 4) Set up the server on localhost with a port of your choice (default 5007)
-4.1) Make sure the port is permitted in the ufw firewall
+* Make sure the port is permitted in the ufw firewall
 5) Configure or import your data
 
 ### Ollama
@@ -223,8 +216,8 @@ Used for media serving from the CopyParty-hosted directories, as CopyParty canno
 1) Install via the curl | sh pattern or other relevant [installer from the website](https://jellyfin.org/downloads/server
 2) Punch the UFW hole required for service: ufw allow 8096/tcp
 3) Visit localhost:8096 to continue setting up via the wizard
-3.1) Save your admin user/pass in password manager or something!
-3.2) You should ensure the fully filepath to desired host-folders are set to permissions 755 for Jellyfin to properly index them!
+* Save your admin user/pass in password manager or something!
+* You should ensure the fully filepath to desired host-folders are set to permissions 755 for Jellyfin to properly index them!
 
 Later: You can install official clients for various devices [from the website if you please](https::/jellyfin.org/downloads)
 
