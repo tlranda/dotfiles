@@ -50,7 +50,7 @@
         "key": "{#90}{$1}│ {#92}Datetime                       {#90}│",
         "format": "{$2}{$5}{year}-{month-pretty}-{day-in-month} {#2}({weekday} {#2}[Wk {week}/52]) {$2}{hour-pretty}:{minute-pretty}:{second-pretty} {timezone-name}"
       },
-      {                   
+      {
         "type": "title",
         "key": "{#90}{$1}│ {#93}Host                           {#90}│",
         "format": "{$2}{$5}{#1}{#36}{host-name}"
@@ -118,7 +118,7 @@
       {
         "type": "physicaldisk",
         "temp": true,
-        "key": "{#90}{$1}│ {#91}{name:-20}           {#90}│",
+        "key": "{#90}{$1}│ {#91}{name<20}           {#90}│",
         "format": "{$2}{$5}{5} {$2}[{size} {4}] {?temperature}-- {temperature}{$2}"
       },
       {
