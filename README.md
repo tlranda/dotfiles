@@ -1,3 +1,11 @@
+# System Configuration / Software Listing
+
+Should make my environment easier to fully/partially port between machines.
+Your Mileage May Vary from following any instructions here -- I'm not
+responsible for any actions you take on your computer. Read the files before
+using/running them. For more legalese version of this disclaimer, see the
+[license](LICENSE).
+
 # Initialization
 
 Merge each file (prefixed with `.`) or directory with your existing installation
