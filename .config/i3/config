@@ -56,8 +56,8 @@ bindsym $mod+d exec --no-startup-id python3 ${HOME}/.config/i3/special_dmenu_han
 bindsym $mod+Return exec i3-sensible-terminal
 
 # Screenshots via maim alias with xclip
-bindsym $altmod+s exec --no-startup-id screenshot
-bindsym $altmod+Shift+s exec --no-startup-id screenshot --select
+bindsym $altmod+s exec --no-startup-id ${HOME}/Tools/screenshot.sh
+bindsym $altmod+Shift+s exec --no-startup-id ${HOME}/Tools/screenshot.sh --select
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
