@@ -13,6 +13,6 @@ else
     # Run command with selected desktop background
     eval ${i3lockcmd} &
 fi
-sleep 1 # Wait 1 second
+sleep 4 # Wait 4 seconds
 xset dpms force standby # Force monitors to turn off
 wait

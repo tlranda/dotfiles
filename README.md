@@ -116,23 +116,6 @@ NOTE: Set this up AFTER configuring flatpak
 4) Visit localhost:47990 in your browser to configure your username and password. Save them! I don't recommend punching a hole into the firewall for this, but you can.
 5) You should be able to log in to the proper portal for Sunshine now and set up client connections
 
-### Davinci Resolve
-
-0) You may need to install the following packages:
-  + libapr1
-  + libaprutil1
-  + libasound2
-  + libglib2.0-0
-  + libxcb-composite0
-  + libxcb-xinput0
-1) [Install from BlackMagicDesign](https://www.blackmagicdesign.com/products/davinciresolve)
-2) Unzip the file, then chmod +x the .run file
-3) sudo ./DavinciResolve\*.run -i
-4) You may retrieve [help from this post](https://www.dedoimedo.com/computers/davinci-resolve-ubuntu-24-04.html) if you run into additional errors
-5) You may need to install [libpango etc as demonstrated here](ttps://stackoverflow.com/questions/78368455/davinci-resolve-19-0b1-will-not-start-on-ubuntu-24-04)
-6) As of now, my install is nonfunctional. It looks like AMD GPUs require the pro drivers which are not always super happy on my system.
-7) It should run out of /opt/resolve/bin, you'll want to add that to PATH for it to be properly selectable as resolve.
-
 ### TagStudio
 
 1) Fetch the [latest release from GitHub](https://github.com/TagStudioDev/TagStudio/releases)
