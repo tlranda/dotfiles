@@ -10,7 +10,9 @@
   "obs": 5,
   "kdenlive": 5,
   "steam": 5,
-  "Lutris": 5
+  "Lutris": 5,
+  "discord": 3,
+  "steam_app_": 2
  },
  "dmenu_path_addition": [
   "~/.local/bin"
@@ -56,16 +58,20 @@
   "["
  ],
  "dmenu_recency": [
-  "firefox",
-  "nautilus",
+  "discord",
+  "snap-store",
   "steam",
+  "firefox",
+  "obsidian",
+  "nautilus",
+  "obs-studio",
+  "gimp",
+  "audacity",
+  "kdenlive",
+  "screenshot",
   "tagstudio",
   "clipboardshot",
   "launch-steam-game",
-  "obsidian",
-  "audacity",
-  "screenshot",
-  "snap-store",
   "list-steam-games"
  ],
  "terminal": "gnome-terminal",
