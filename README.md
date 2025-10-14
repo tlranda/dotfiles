@@ -216,6 +216,12 @@ Later: You can install official clients for various devices [from the website if
 
 Install via snap-store or `snap install` in terminal
 
+### Discord
+
+Published by snapcrafters
+
+1) Log in.
+
 ### Audacity
 
 Published by snapcrafters
