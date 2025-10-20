@@ -1,6 +1,8 @@
 .bash_secret
 .bash_unsecret
 .gitconfig
+*.secret
+*/__pycache__/
 .config/i3/logs
 .config/i3/sleep_history.json
 .config/fastfetch/altconfigs
