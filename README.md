@@ -79,6 +79,36 @@ Customizable window manager
 
 ## Via External
 
+### OBS (Flatpak)
+
+#### Set up i3 workspace follower
+
+See instructions under [obs-scripting/README.md](obs-scripting/README.mD)
+
+While this may technically work with the snap-installable version, snap is very
+restrictive / difficult to work with for scripting by comparison.
+
+#### Set up replay buffer
+
+1) Set up the scene
+  + Add a scene if necessary. I call mine "i3FollowerScene" per instructions for i3 workspace following
+  + Add at least one source (preferablly display capture) to the scene.
+
+2) Adjust the settings (button at the bottom of the rightmost menu pane)
+  + Output pane
+    + Recording/Recording Path: Update to where you want the videos to be saved
+    + Recording/Recording Format: I prefer MPEG-4 (.mp4)
+    + Replay Buffer: Enable the replay buffer
+    + Replay Buffer/Maximum Replay Time: I set this to 240 seconds (4 minutes)
+    + Replay Buffer/Maximum Memory: I set this to 4096 MB (4GB)
+  + Hotkeys pane
+    + Super+Control+Shift+S : Save replay buffer (Makes the clip)
+    + Super+Control+Shift+A : Start replay buffer (Enable clipping)
+    + Super+Control+Shift+Z : Stop replay buffer (Disable clipping)
+  + Advanced pane
+    + Hotkeys/Hotkey Focus Behavior: Never disable hotkeys
+
+
 ### Firefox
 
 1) [Install Firefox on your system if it isn't already installed](https://www.firefox.com/en-US/)
@@ -291,28 +321,4 @@ Published by canonical
 4) For Lutris compatibility, make sure your profile has the following:
   + Visibility: Public
   + Game Visibility: Public
-
-### OBS
-
-Published by snapcrafters
-
-#### Set up replay buffer
-
-1) Set up the scene
-  + Add a scene if necessary. I call mine "ReplayBufferScene"
-  + Add a source to the scene. I use a display capture on the primary monitor. Rename if you want.
-
-2) Adjust the settings (button at the bottom of the rightmost menu pane)
-  + Output pane
-    + Recording/Recording Path: Update to where you want the videos to be saved
-    + Recording/Recording Format: I prefer MPEG-4 (.mp4)
-    + Replay Buffer: Enable the replay buffer
-    + Replay Buffer/Maximum Replay Time: I set this to 240 seconds (4 minutes)
-    + Replay Buffer/Maximum Memory: I set this to 4096 MB (4GB)
-  + Hotkeys pane
-    + Super+Control+Shift+S : Save replay buffer (Makes the clip)
-    + Super+Control+Shift+A : Start replay buffer (Enable clipping)
-    + Super+Control+Shift+Z : Stop replay buffer (Disable clipping)
-  + Advanced pane
-    + Hotkeys/Hotkey Focus Behavior: Never disable hotkeys
 
