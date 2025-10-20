@@ -129,8 +129,10 @@ def populate_options():
     return choice
 
 def process_choice(choice):
-    # Default everything to None
-    program = recency_program = args = signal = None
+    logger.debug(f"Processing choice: {choice}")
+    # Default everything to None / off
+    program = recency_program = prog_args = signal = None
+    silent_terminal = False
 
     # Regex doesn't do the split the way I want, so implement my own split here
     arg_split = None
@@ -144,49 +146,58 @@ def process_choice(choice):
 
     if arg_split is not None and signal_split is not None:
         if arg_split < signal_split:
-            program = choice[:arg_split]
-            args =    choice[arg_split+1:signal_split]
-            signal =  choice[signal_split+1:]
+            program   = choice[:arg_split]
+            prog_args = choice[arg_split+1:signal_split]
+            signal    = choice[signal_split+1:]
         else:
-            program = choice[:signal_split]
-            signal =  choice[signal_split+1:arg_split]
-            args =    choice[arg_split+1:]
+            program   = choice[:signal_split]
+            signal    = choice[signal_split+1:arg_split]
+            prog_args = choice[arg_split+1:]
     elif signal_split is not None:
         program = choice[:signal_split]
         signal =  choice[signal_split+1:]
     elif arg_split is not None:
-        program = choice[:arg_split]
-        args =    choice[arg_split+1:]
+        program   = choice[:arg_split]
+        prog_args = choice[arg_split+1:]
     else:
         program = choice
 
     recency_program = program
 
-    if args is not None:
-        args = args.split(' ')
+    if prog_args is not None:
+        prog_args = prog_args.split(' ')
 
     # Some programs need to be executed within a terminal for you to observe what happens
     if 'requires_terminal' in settings and program in settings['requires_terminal']:
-        args = "'"+" ".join(args)+"'"
-        if args is None:
+        if prog_args is not None:
+            if prog_args[-1] == ('&'):
+                silent_terminal = True
+                prog_args = prog_args[:-1]
+                if len(prog_args) == 0:
+                    prog_args = None
+        if prog_args is not None:
+            prog_args = "'"+" ".join(prog_args)+"'"
+        if prog_args is None:
             _args = copy.copy(settings['terminal_args'])
             if 'terminal_preuser_args' in settings:
                 _args += [settings['terminal_preuser_args']]
                 _args[-1] += program
             else:
                 _args += [program]
-            args = _args
+            prog_args = _args
         else:
             _args = copy.copy(settings['terminal_args'])
             if 'terminal_preuser_args' in settings:
-                _args += [settings['terminal_preuser_args']+program+" "+args]
+                _args += [settings['terminal_preuser_args']+program+" "+prog_args]
             else:
-                _args += [program+" "+args]
-            args = _args
-        if 'terminal_postuser_args' in settings:
-            args[-1] += settings['terminal_postuser_args']
+                _args += [program+" "+prog_args]
+            prog_args = _args
+        if not silent_terminal and 'terminal_postuser_args' in settings:
+            prog_args[-1] += settings['terminal_postuser_args']
+        if silent_terminal:
+            prog_args.append('&')
         program = settings['terminal']
-        logger.debug(f"Prepare shell command due to requiring terminal: {args}")
+        logger.debug(f"Prepare shell command due to requiring terminal: {prog_args}")
 
     # Tidy up with validation
     if signal is not None:
@@ -198,10 +209,10 @@ def process_choice(choice):
             logger.error(f"Could not convert indicated monitor signal (via @) '{signal}' to integer")
             signal = ""
 
-    logger.debug(f"Dmenu selects program '{program}' with monitor signal value '{signal}' and arguments '{args}'")
-    return signal, program, recency_program, args
+    logger.debug(f"Dmenu selects program '{program}' with monitor signal value '{signal}' and arguments '{prog_args}'")
+    return signal, program, recency_program, prog_args, silent_terminal
 
-def launch(signal, program, recency_program, args):
+def launch(signal, program, recency_program, prog_args, silent_terminal):
     # Send message to automanager via tick
     if signal is not None:
         automanager_signal = f"automanager::force_workspace{signal}"
@@ -219,9 +230,9 @@ def launch(signal, program, recency_program, args):
         json.dump(settings, f, indent=1)
 
     # Form program with arguments
-    if args is not None:
+    if prog_args is not None:
         program = [program]
-        program.extend(args)
+        program.extend(prog_args)
     # Run program as expected and exit this process
     logger.info(f"Launch program '{program}'")
     proc = subprocess.Popen(program)
@@ -229,6 +240,10 @@ def launch(signal, program, recency_program, args):
     # You can only detach if you own the process ID created by the program!
     if program == recency_program:
         proc.detach()
+    # While I would like to "hide" a silent_terminal here, what I've managed to
+    # do is instead just drop the post-script part that waits for the user to
+    # shut it down. Perhaps I can move it to some 'junk' workspace that won't
+    # be bothersome?
 
 if __name__ == '__main__':
     global settings

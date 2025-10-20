@@ -80,6 +80,7 @@ launch-flatpak-app() {
 }
 alias actualbudget="flatpak run com.actualbudget.actual";
 alias heroic="flatpak run com.heroicgameslauncher.hgl";
+alias obs-studio="flatpak run com.obsproject.Studio";
 
 # Common typos for builtins
 sl() {
