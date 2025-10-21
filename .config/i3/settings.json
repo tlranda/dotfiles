@@ -5,13 +5,6 @@
   "org.gnome.Nautilus": "Nautilus"
  },
  "app_force_workspace": {
-  "obsidian": 1,
-  "firefox_firefox": 3,
-  "obs": 5,
-  "kdenlive": 5,
-  "steam": 5,
-  "Lutris": 5,
-  "discord": 3,
   "steam_app_": 2
  },
  "dmenu_path_addition": [
@@ -19,7 +12,7 @@
  ],
  "dmenu_injection": {
   "~/.bash_aliases": {
-   "last-modified": "2025-10-03 14:11:58",
+   "last-modified": "2025-10-20 17:00:56",
    "names": [
     "i3class",
     "trackpad",
@@ -35,6 +28,7 @@
     "launch-flatpak-app",
     "actualbudget",
     "heroic",
+    "obs-studio",
     "sl",
     "ssh-find",
     "ssh-killagent",
@@ -58,14 +52,15 @@
   "["
  ],
  "dmenu_recency": [
-  "discord",
-  "snap-store",
   "steam",
-  "firefox",
+  "discord",
   "obsidian",
-  "nautilus",
+  "firefox",
   "obs-studio",
   "gimp",
+  "heroic",
+  "snap-store",
+  "nautilus",
   "audacity",
   "kdenlive",
   "screenshot",
@@ -93,6 +88,7 @@
   "folder-usage",
   "notes",
   "screenshot",
-  "clipboardshot"
+  "clipboardshot",
+  "obs-studio"
  ]
 }

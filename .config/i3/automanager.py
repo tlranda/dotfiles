@@ -60,6 +60,11 @@ def auto_assign_new_to_workspace(i3, e):
                 # Found the workspace to use
                 if ws_num == ws_target:
                     logger.info(f"New container <class='{container_class}'> targets window {ws_target} as name '{ws.name}'.")
+                    # BUG: If an application is slow-to-launch or does pre-launch stuff that takes nontrivial time, this OFTEN moves the previously active window to the workspace!
+                    # Possible solutions:
+                    # 1) Ignore-once for discord/etc so it hooks the REAL opening?
+                    # 2) Sleep a bit on these apps to wait for real initialization?
+                    # 3) Can the command below target specific container?
                     command = f'move container to workspace "{ws.name}"'
                     status = i3.command(command)
                     if not status[0].success:

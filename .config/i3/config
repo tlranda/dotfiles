@@ -38,6 +38,32 @@ workspace $ws3 output HDMI-A-0
 workspace $ws4 output DisplayPort-0
 workspace $ws5 output HDMI-A-0
 
+# i3 can successfully force SOME applications to properly open on a default workspace
+# assignment, with caveats below:
+# NOTE: Have to use "number" prefix as I will rename the workspaces dynamically!
+# Failure to do so will launch to workspace named literally "#", then rename it
+# (so you'd have multiple workspaces of the same number and break numeric-based
+#  workspace-swapping, a la "3: Discord" and "3: Firefox" simultaneously existing,
+#  where MOD+3 can ONLY select the first 3-valued instance)
+# NOTE: Names have to be fully qualified, so use the settings.json / automanager.py
+#  to flexibly assign classes (ie: steam_app_*) to a given workspace. There's
+#  still a bug where it can get overzealous with applications that preload or
+#  relaunch themselves (where a previous, unrelated window may get dragged over
+#  there too during renaming etc). Firefox Picture-in-Picture will ALWAYS assign
+#  once (to the default workspace), so you have to swap over to its default
+#  workspace to see PiP if the parent-window has been moved to a different
+#  workspace. However, assigning firefox via settings.json / automanager.py
+#  would YANK the entire browser window back to the default workspace, so I
+#  think this is a better solution unless/until I can fix that bug with
+#  automanager's behavior
+assign [class="^obsidian$"] number 1
+assign [class="^firefox_firefox$"] number 3
+assign [class="^discord$"] number 3
+assign [class="^obs$"] number 5
+assign [class="^kdenlive$"] number 5
+assign [class="^steam$"] number 5
+assign [class="^Lutris$"] number 5
+
 # Reload the configuration file
 bindsym $mod+Shift+c reload
 # Restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
