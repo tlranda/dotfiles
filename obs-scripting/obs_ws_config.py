@@ -12,7 +12,7 @@ if password_from_file:
     with open(pathlib.Path(__file__).with_name(password), 'r') as f:
         password = "".join([_.strip() for _ in f.readlines()])
 
-scene = 'i3FollowerScene'
+i3_follower_scene = 'i3Follower'
 # Set == None to allow all workspaces,
 # else set to list of strings of numbered workspaces that CAN be followed (allowlist)
 # ie: [str(_) for _ in range(1,10)]
@@ -22,3 +22,8 @@ allowed_workspaces = None
 # Each source should be a display capture with appropriate settings
 # Each source should be named how i3 sees the monitor named
 # ie: DisplayPort-0, HDMI-A-0 ...
+
+stream_scene = 'StreamContent'
+# Add a text item named "NowPlaying" for the script to indicate the name of your current game without worrying too much
+# Relies upon .desktop files in ~/.local/share/applications to fetch nicer names for Steam games, otherwise just uses your container/workspace name
+now_playing_source = 'NowPlaying'
