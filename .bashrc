@@ -118,6 +118,7 @@ if ! shopt -oq posix; then
   fi
 fi
 
+source ~/.xinitrc
 candidate_to_add_to_path=("${HOME}/.local/bin");
 for candidate in "${candidate_to_add_to_path[@]}"; do
     if [[ "${PATH}" == *"${candidate}"* ]]; then

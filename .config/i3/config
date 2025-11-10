@@ -156,6 +156,8 @@ exec_always --no-startup-id python3 ${HOME}/.config/i3/automanager.py
 # the screen before suspend. Use loginctl lock-session to lock your screen.
 # Locking exit, preserves windows
 set $i3lockwall "${HOME}/.config/i3/./sleeplock.sh"
+exec --no-startup-id xset s off
+exec --no-startup-id xset -dpms
 exec --no-startup-id xss-lock --transfer-sleep-lock -- $i3lockwall
 # Lock screen shortcut
 bindsym $mod+Shift+t exec --no-startup-id $i3lockwall
