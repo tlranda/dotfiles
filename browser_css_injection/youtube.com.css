@@ -1,0 +1,24 @@
+/* These make the homepage video carousel have smaller thumbnails / roughly appropriate number of thumbnails per line on my monitor */
+.ytd-rich-grid-renderer {
+  --ytd-rich-grid-item-max-width: 400px;
+  --ytd-rich-grid-items-per-row: 6;
+}
+.ytd-rich-shelf-renderer {
+  --ytd-rich-shelf-item-max-width: 400px;
+  --ytd-rich-shelf-items-per-row: 6;
+}
+
+/* This gets rid of the rounded edges around the video player */
+.ytd-watch-flexy {
+  border-radius: 0px;
+  overflow: visible;
+}
+ytd-watch-flexy[rounded-player] #ytd-player.ytd-watch-flexy {
+  border-radius: 0px;
+  overflow: visible;
+}
+
+/* IDK why this wasn't displaying */
+.ytd-channel-name {
+  --display: block;
+}
