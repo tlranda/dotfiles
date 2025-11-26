@@ -56,6 +56,8 @@ workspace $ws5 output HDMI-A-0
 #  would YANK the entire browser window back to the default workspace, so I
 #  think this is a better solution unless/until I can fix that bug with
 #  automanager's behavior
+# TODO: Revert this back to automanager's config, as it doesn't play nice with
+#  automanager's @ directive and other tweaks!
 assign [class="^obsidian$"] number 1
 assign [class="^firefox_firefox$"] number 3
 assign [class="^discord$"] number 3
