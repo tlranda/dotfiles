@@ -20,6 +20,18 @@ included in .gitignore to help with not committing changes to them.
 You'll need to update both of these files, the rest should run out-of-the-box
 without extra modification once all relevant software is installed.
 
+I recommend making a cross-user group (sudo groupadd dotusers) and adding all
+human users to the group (sudo usermod -a -G dotusers ${USER}) so that you can
+make these files cross-user available easily.
+Ie:
+
+sudo mkdir /dotfiles;
+sudo chgrp -R dotusers /dotfiles;
+sudo chmod -R 2775 /dotfiles;
+
+Then each user can link to/from /dotfiles transparently and updates should be
+shared across all users without file duplication etc.
+
 # Programs to Install / Configure
 
 ## Via Package-Manager
