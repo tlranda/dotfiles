@@ -24,6 +24,14 @@ without extra modification once all relevant software is installed.
 
 ## Via Package-Manager
 
+### Vim
+
+Generally comes pre-installed, but for plugins to use with my .vimrc (included),
+you'll need to install VimPlugged:
+
+1) curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+2) Open any buffer with vim and run the command (ie: from normal mode ':' to enter command mode) "PlugInstall"
+
 ### Flatpak
 
 1) sudo apt install flatpak
@@ -316,9 +324,15 @@ Published by canonical
 
 2) Log in to your account.
 
-3) Download a small game to trigger the proton compatibility layer installs / test.
+3) Disable hardware acceleration (known to make the library/store hang when unattended for small periods of time)
+    3.1) Click 'Steam' in the upper left corner and navigate to settings
+    3.2) Navigate to the 'Interface' panel and ensure 'Enable GPU accelerated rendering in web views (requires restart)' is DISABLED
+    3.3) Enabling smooth scrolling in web views is OK -- you don't have to turn that off
+    3.4) While we're here, ensure your Start Up Location is set to Library and that 'Notify me about ...' is DISABLED
 
-4) For Lutris compatibility, make sure your profile has the following:
+4) Download a small game to trigger the proton compatibility layer installs / test.
+
+5) For Lutris compatibility, make sure your profile has the following:
   + Visibility: Public
   + Game Visibility: Public
 
