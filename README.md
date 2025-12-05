@@ -94,8 +94,15 @@ Fancy way to show off system configuration
 
 Customizable window manager
 
-1) Copy .config/i3 files into ${HOME}/.config/i3 after basic setup is present
+1) Link .config/i3 files into ${HOME}/.config/i3 after basic setup is present
 2) Ensure you have installed Python3 and the i3ipc package for python scripts to work
+
+### dunst
+
+Customizable notification manager
+
+1) Link .dunstrc under ${HOME}/.config/dunst as "dunstrc" (no leading dot)
+2) Restart dunst (restarting i3 should do, or killall dunst && dunst &)
 
 ## Via External
 

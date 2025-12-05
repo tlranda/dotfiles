@@ -1,0 +1,59 @@
+[global]
+    ### Display
+    # Monitor to display notification on
+    monitor=2
+    # Ensure monitor setting is followed, not keyboard/mouse focus
+    follow = none
+
+    ### Geometry
+    # Same works for height
+    width = (300, 20000)
+    # Position on the screen
+    origin = top-left
+    # Offset from origin
+    offset = 10x10
+
+    ### Progress bar
+    progress_bar = true
+
+    ### Colors/text
+    background = "#090618"
+    foreground = "#BBBBBB"
+    frame_color = "#DDDDDD"
+    # auto/foreground/frame/RAW color
+    separator_color = auto
+    font = UbuntuMono Nerd Font Mono 12
+    markup = full
+    format = "[<u>%a</u>]\n|<%b>%s</b>|\n\n%b"
+    # Alignment of the text
+    alignment = left
+    vertical_alignment = center
+    ignore_newline = no
+    word_wrap = yes
+    # Indicators for URLs (U) and actions (A)
+    show_indicators = no
+    icon_position = left
+    min_icon_size = 32
+    max_icon_size = 512
+
+    ### Other behaviors
+    # Show notification count hidden due to display limits
+    indicate_hidden = yes
+    # sort on id/urgency_{as,des}cending/update
+    sort = no
+    # What to do for mouse events on a notification
+    mouse_left_click = close_current
+    mouse_middle_click = context
+    mouse_right_click = close_all
+    timeout = 0
+    browser = /usr/bin/firefox
+
+[urgency_low]
+    frame_color = "#3B7C87"
+
+[urgency_normal]
+    frame_color = "#99C56D"
+
+[urgency_critical]
+    frame_color = "#B7472A"
+
