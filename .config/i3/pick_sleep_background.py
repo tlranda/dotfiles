@@ -34,7 +34,8 @@ logconfig = {
         'format': "%(asctime)s %(levelname)s: %(message)s",
         'datefmt': DATETIME_FORMAT
 }
-if len(sys.argv) == 1:
+# Toggle this manually when you want logs to stdout
+if True:
     # Normal run w/o arguments set
     logging.basicConfig(filename=default_log_path,
                         **logconfig)

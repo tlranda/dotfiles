@@ -3,7 +3,7 @@
 # This script picks a lockscreen / sleep background on rotation
 # You can initialize its config by running the script directly and can edit
 # other settings via this script (run with --help for options)
-i3lockcmd=$(python3 ${HOME}/.config/i3/pick_sleep_background.py);
+i3lockcmd=$(python3 ${HOME}/.config/i3/pick_sleep_background.py --overlay-text "${USER}");
 if [[ $? -ne 0 ]]; then
     echo "SLEEPLOCK.SH ERROR CODE: $?" >> ${HOME}/.config/i3/logs/pick_sleep_background.log;
     echo "SLEEPLOCK.SH RETRIEVED OUTPUT: ${i3lockcmd}" >> ${HOME}/.config/i3/logs/pick_sleep_background.log;
