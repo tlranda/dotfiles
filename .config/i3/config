@@ -151,6 +151,9 @@ exec_always ${HOME}/.screenlayout/TripleMonitorLayout.sh
 # https://wiki.archlinux.org/index.php/XDG_Autostart
 exec --no-startup-id dex --autostart --environment i3
 
+# Please use Dunst for notifications
+exec_always --no-startup-id "killall dunst; dunst"
+
 # My python script for renaming workspaces based on their content
 exec_always --no-startup-id python3 ${HOME}/.config/i3/automanager.py
 

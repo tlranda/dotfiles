@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import pathlib
+import subprocess
 import sys
 import time
 
@@ -54,6 +55,7 @@ def init_history(configpath):
             "penalty-weight-multiplier": -1, # If you manually give an image a penalty, multiply it by this value
             "frequency-weight-multiplier": 1, # Increases weight attribution based on access-frequency
             "new-image-weight-advantage": 1, # Increases weight for NEVER picked images
+            "cache_path": "~/.cache/sleep_backgrounds", # Where edited images get cached
             "base_path": "~/Pictures/", # Where images are located on disk (single directory to search)
             "images": {}, # Stores metadata about historically sampled images
                           # FORMAT:
@@ -62,6 +64,9 @@ def init_history(configpath):
                           #     last-access: YYYY-MM-DD HH:MM:SS (date of last sampling selection)
                           #     penalty-weight: 0 (manual adjustment to sampling frequency)
                           #     omit: false (manually deny image from being sampled)
+                          #     overlay_maps: dict of 'overlay_string' -> 'new filepath' where the overlay is applied
+            "overlay_sizes": {}, # Maps strings to the f"{x},{y}" size string needed
+                                 # to print the string as an overlay on an image
             }
     logger.info(f"Initialize NEW history at {configpath}")
     with open(configpath,'w') as f:
@@ -87,7 +92,9 @@ def load_history(expect_history):
                            "frequency-weight-multiplier": _history["frequency-weight-multiplier"],
                            "new-image-weight-advantage": _history["new-image-weight-advantage"],
                            "images": _history["images"],
+                           "cache_path": _history["cache_path"],
                            "base_path": _history["base_path"],
+                           "overlay_sizes": _history["overlay_sizes"],
                            }
             except KeyError as e:
                 logger.error(f"History / configuration file does not have required key '{e.args[0]}'. It may be misformatted.")
@@ -95,7 +102,7 @@ def load_history(expect_history):
             for idx, (key, value) in enumerate(_history['images'].items()):
                 # Validate all keys present
                 try:
-                    for expect_key in ['last-access','penalty-weight','omit']:
+                    for expect_key in ['last-access','penalty-weight','omit','overlay_maps']:
                         _ = history['images'][key][expect_key]
                 except KeyError:
                     logger.error(f"Image entry for '{key}' lacks expected entry '{expect_key}'")
@@ -192,7 +199,6 @@ def set_weights(history, base_path):
         # Plug into quadratic formula to get extra weight from frequency
         # x = idx
         extra_weight = (alpha*idx)*(-1*idx+beta)
-
         logger.debug(f"Add weight {extra_weight} to key '{keyweight_key}' based on last-access {key}")
         keyweights[keyweight_key] += extra_weight
 
@@ -217,6 +223,7 @@ def new_history_for_image():
             "last-access": datetime.datetime.now().strftime(DATETIME_FORMAT),
             "penalty-weight": 0,
             "omit": False,
+            "overlay_maps": {},
             }
 
 def update_last_access(history, selected_key, config):
@@ -246,6 +253,35 @@ def make_weighted_choice(hist_sort):
     selected_key = keys[key_idx]
     logger.info(f"Random integer {init_choice} selects key '{selected_key}'")
     return selected_key
+
+
+# IMAGE EDITING
+OVERLAY_FONT = "/usr/share/fonts/truetype/UbuntuMono/UbuntuMonoNerdFontMono-Bold.ttf"
+OVERLAY_SIZE = 72
+OVERLAY_BORDER = "10x10"
+def calculate_overlay_size(text: str):
+    # For simplicity, the font config and border settings are in THIS script (above)
+    # and not currently exposed to the user, as it would require me to somehow
+    # save and compare if a cached overlay image respects the intended settings.
+    # Set your overlay parameters ONCE and invalidate all of your cached images
+    # if you decide to change it
+
+    # Make a temp file and then unlink it -- clobbering not expected; not protected
+    tmp_file = pathlib.Path('/tmp/overlay_measure.png')
+    # Split the command up a bit so it doesn't get ruined formatting-wise
+    cmd_pt1 = (f"convert -background none -fill white -font {OVERLAY_FONT} "+\
+              f"-pointsize {OVERLAY_SIZE}").split()
+    cmd_pt2 = [f"label:{text}"]
+    cmd_pt3 = (f"-trim +repage -bordercolor none -border {OVERLAY_BORDER} "+\
+              f"{tmp_file}").split()
+    logger.info(f"Calculate overlay size for string '{text}'")
+    subprocess.run(cmd_pt1+cmd_pt2+cmd_pt3)
+    measurement_result = subprocess.run(f"identify {tmp_file}".split(),
+                                        stdout=subprocess.PIPE,
+                                        ).stdout
+    tmp_file.unlink()
+    # <IMG_NAME> <IMG_FORMAT> <IMG_SIZE_XxY> ...
+    return measurement_result.decode('utf-8').split()[2].replace('x',',')
 
 
 # COMMANDLINE PARSING
@@ -279,6 +315,9 @@ def build():
                         help=f"Parse JSON at --config path to ensure it has no errors {dhelp}")
     parser.add_argument('--parse-with-weights', action='store_true',
                         help=f"Parse JSON at --config path and show resulting weights {dhelp}")
+    #           + Editing the image
+    parser.add_argument('--overlay-text', default=None,
+                        help=f"Overlay text on the image (caches a new image per unique text) {dhelp}")
     return parser
 
 def flatten_arg(attr):
@@ -357,15 +396,8 @@ if __name__ == '__main__':
                 logger.info(f"Current indexed images at {history[k]} are: {', '.join(history['images'].keys()) if len(history['images']) > 0 else 'N/A'}")
             history[k] = v
 
-    # Properly set config_base_path
-    # If '~' is in the path, you have to do ugly things
-    parts = list(pathlib.Path(history['base_path']).parts)
-    if parts[0] == '~':
-        parts[0] = pathlib.Path.home()
-    if len(parts) > 1:
-        for part in parts[1:]:
-            parts[0] = parts[0].joinpath(part)
-    config_base_path = parts[0]
+    # Properly set config_base_path, respect that it may include '~' for multi-user usability
+    config_base_path = pathlib.Path(history['base_path']).expanduser()
 
     # User requests one or more images to be indexed into history
     if args.index is not None:
@@ -391,7 +423,7 @@ if __name__ == '__main__':
                 raise ValueError(f"Image {image} is not indexed in configuration history {args.config}")
             history['images'][image]['omit'] = not history['images'][image]['omit']
 
-    # ALL CMDLINE EDITS OVER
+    # ALL CMDLINE EDITS OVER (excluding image edits)
     if args.parse:
         import pprint
         pprint.pprint(history)
@@ -407,6 +439,56 @@ if __name__ == '__main__':
     # Make weighted choice
     selected_key = make_weighted_choice(hist_sort)
     update_last_access(history, selected_key, args.config)
+    # If user requests an overlay, edit the image and cache it, then adjust the selected path
+    if args.overlay_text is not None:
+        if args.overlay_text not in history['overlay_sizes']:
+            history['overlay_sizes'][args.overlay_text] = calculate_overlay_size(args.overlay_text)
+        overlay_size = history['overlay_sizes'][args.overlay_text]
+        logger.info(f"Overlay size for text '{args.overlay_text}': {overlay_size}")
+        # Cache the image with overlay applied
+        cache_path = pathlib.Path(history['cache_path']).expanduser()
+        cache_path.mkdir(parents=True, exist_ok=True)
+        remap = args.overlay_text in history['images'][selected_key]['overlay_maps']
+        if not remap:
+            # Set unique name
+            overlay_id = 0
+            convert_skey = pathlib.Path(history['base_path']).expanduser() / selected_key
+            skey_stem = pathlib.Path(selected_key).stem
+            overlay_path = cache_path / f"{skey_stem}_{overlay_id}.png"
+            while overlay_path.exists():
+                overlay_id += 1
+                overlay_path = cache_path / f"{skey_stem}_{overlay_id}.png"
+            # Create the cached overlay image
+            cmd_pt1 = (f"convert {convert_skey} ( -background none -fill white "+\
+                      f"-font {OVERLAY_FONT} -pointsize {OVERLAY_SIZE}").split()
+            cmd_pt2 = [f"label:{args.overlay_text}"]
+            cmd_pt3 = (f"-trim +repage -bordercolor none "+\
+                      f"-border {OVERLAY_BORDER} -alpha set -channel A "+\
+                      f"-evaluate set 0 +channel -fill rgba(0,0,0,0.6) "+\
+                      f"-draw").split()
+            cmd_pt4 = [f"roundrectangle 0,0 {overlay_size} 10,10"]
+            cmd_pt5 = (f"-blur 0x3 ) -gravity center -compose over -composite "+\
+                      f"-font {OVERLAY_FONT} -pointsize {OVERLAY_SIZE} "+\
+                      f"-fill white -gravity center -annotate +0+0").split()
+            cmd_pt6 = [f"{args.overlay_text}"]
+            cmd_pt7 = [f"{overlay_path}"]
+            cmd = cmd_pt1+cmd_pt2+cmd_pt3+cmd_pt4+cmd_pt5+cmd_pt6+cmd_pt7
+            logger.info(f"Creating cached overlay image via command: {cmd}")
+            result = subprocess.run(cmd)
+            if result.returncode != 0:
+                logger.error(f"Failed to create overlay image (code: {result.returncode})!"+\
+                             "Revert to original selection")
+            else:
+                # Map into history and re-pick
+                history['images'][selected_key]['overlay_maps'][args.overlay_text] = str(overlay_path)
+                remap = True
+                # Update history on disk!
+                with open(args.config, 'w') as f:
+                    logger.info(f"Update config {args.config} with latest selection and metadata")
+                    logger.debug(history)
+                    json.dump(history, f)
+        if remap:
+            selected_key = history['images'][selected_key]['overlay_maps'][args.overlay_text]
 
     # Form command for output
     basic_path = config_base_path.joinpath(selected_key)
