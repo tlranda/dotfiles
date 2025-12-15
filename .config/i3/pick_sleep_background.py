@@ -57,7 +57,7 @@ def init_history(configpath):
             "frequency-weight-multiplier": 1, # Increases weight attribution based on access-frequency
             "new-image-weight-advantage": 1, # Increases weight for NEVER picked images
             "cache_path": "~/.cache/sleep_backgrounds", # Where edited images get cached
-            "base_path": "~/Pictures/", # Where images are located on disk (single directory to search)
+            "base_path": "~/Pictures/Desktop Backgrounds", # Where images are located on disk (single directory to search)
             "images": {}, # Stores metadata about historically sampled images
                           # FORMAT:
                           #   Key = filename relative to base_path
@@ -460,7 +460,7 @@ if __name__ == '__main__':
                 overlay_id += 1
                 overlay_path = cache_path / f"{skey_stem}_{overlay_id}.png"
             # Create the cached overlay image
-            cmd_pt1 = (f"convert {convert_skey} ( -background none -fill white "+\
+            cmd_pt1 = ["convert",f"{convert_skey}"]+(f"( -background none -fill white "+\
                       f"-font {OVERLAY_FONT} -pointsize {OVERLAY_SIZE}").split()
             cmd_pt2 = [f"label:{args.overlay_text}"]
             cmd_pt3 = (f"-trim +repage -bordercolor none "+\
