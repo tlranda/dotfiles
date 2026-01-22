@@ -1,7 +1,3 @@
-# Builtin
-import asyncio
-import pathlib
-
 # Dependencies
 import simpleobsws
 from i3ipc.aio import Connection
@@ -9,6 +5,13 @@ from i3ipc import Event
 
 # Local
 import obs_ws_config as cfg
+
+# Builtin
+import asyncio
+import pathlib
+
+#async def notify_send_recording_done_msg(eventType, eventData):
+#    print(f"New event! Type: '{eventType}' Raw Data: {eventData}")
 
 class i3OBSManager:
     def __init__(self):
@@ -34,9 +37,18 @@ class i3OBSManager:
         loop.run_forever() # Hold event loop open
 
     async def make_connections(self):
+        parameters = simpleobsws.IdentificationParameters()
+        # Must subscribe to event categories you need:
+        # General | Config | Scenes | Inputs | Transitions | Filters | Outputs | SceneItems | MediaInputs | Vendors | Ui
+        #parameters.eventSubscriptions = (1<<0) | (1<<6) # General | Outputs
         # Connect to OBS WebSocket using config Host:Port and password
         self.ws = simpleobsws.WebSocketClient(url=f"ws://{cfg.host}:{cfg.port}",
-                                              password=cfg.password)
+                                              password=cfg.password,
+                                              #identification_parameters=parameters
+                                              )
+        # Register events here (callbacks must be async coroutines!)
+        #self.ws.register_event_callback(notify_send_recording_done_msg)
+        # End register events, connect
         await self.ws.connect()
         await self.ws.wait_until_identified()
         # Cache all OBS sources in target scene for i3Follower

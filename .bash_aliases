@@ -48,7 +48,7 @@ launch-steam-game() {
 
 # Basic access to Flatpak library similar to Steam above
 list-flatpak-apps() {
-    flatpak list | tail -n +1 | awk '{print "|" $1 "|" $2 "|"}' | grep -E "\|((com)|(org))\.";
+    flatpak list | tail -n +1 | awk -F'\t' '{print "|" $1 "|" $2 "|"}' | grep -E "\|((com)|(org))\.";
 }
 find-flatpak-app() {
     if [[ $# -ne 1 ]]; then
@@ -62,17 +62,17 @@ launch-flatpak-app() {
         echo "USAGE: launch-flatpak-app <grep-able part of name (case IN sensitive)>";
         return;
     fi;
-    app_match=`find-flatpak-app "$1"`;
+    app_match=`find-flatpak-app "$1" | xargs`;
     n_apps=`echo -e "$app_match" | wc -l`;
     if [[ ${n_apps} -eq 0 ]]; then
-        echo "Could not find your app. Available apps:";
+        echo "Could not find your app (${app_match}). Available apps:";
         list-flatpak-apps;
     else if [[ ${n_apps} -gt 1 ]]; then
         echo "Ambiguous response (found ${n_apps} apps). Please narrow down between these options:";
         echo "${app_match}";
     else
-        echo "Found your app: ${app_match}";
-        app_id=`echo "${app_match}" | awk '{ print $2 }'`;
+        echo "Found your app: '${app_match}'";
+        app_id=`echo "${app_match}" | awk '{ print $NF }'`;
         echo "ID: ${app_id}";
         flatpak run $app_id;
     fi;

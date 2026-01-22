@@ -94,6 +94,7 @@ Fancy way to show off system configuration
 
 Customizable window manager
 
+0) Install i3 (apt install i3 i3-wm i3lock i3status dmenu)
 1) Link .config/i3 files into ${HOME}/.config/i3 after basic setup is present
 2) Ensure you have installed Python3 and the i3ipc package for python scripts to work
 
@@ -130,7 +131,7 @@ restrictive / difficult to work with for scripting by comparison.
     + Replay Buffer/Maximum Memory: I set this to 4096 MB (4GB)
   + Hotkeys pane
     + Super+Control+Shift+S : Save replay buffer (Makes the clip)
-    + Super+Control+Shift+A : Start replay buffer (Enable clipping)
+    + Super+Control+Shift+Z : Start replay buffer (Enable clipping)
     + Super+Control+Shift+Z : Stop replay buffer (Disable clipping)
   + Advanced pane
     + Hotkeys/Hotkey Focus Behavior: Never disable hotkeys
@@ -354,4 +355,16 @@ Published by canonical
 5) For Lutris compatibility, make sure your profile has the following:
   + Visibility: Public
   + Game Visibility: Public
+
+# Hardware Configuration
+
+## Keyboard
+
+Visit [https://launcher.keychron.com]() using Chrome, Edge, or Opera
+
+## Bluetooth
+
+This article is nice for pairing bluetooth devices to Linux (ie: iPhone audio)
+
+[https://computingforgeeks.com/connect-to-bluetooth-device-from-linux-terminal/]()
 

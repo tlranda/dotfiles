@@ -1,7 +1,13 @@
 1) Install simpleobsws via your package manager
 2) Run OBS via terminal so it can use local packages (like i3ipc, another dependency of the i3Follower.py script)
 3) Enable WebSocket Servers in OBS
+    3.1) Tools -> WebSocket Server SEttings
+    3.2) Enable WebSocket server
 4) Set up your OBS scenes/sources and other files according to all instructions in obs\_ws\_config.py
+    4.1) Monitor sources should have names that match i3 (names can be given by xrandr)
+    HDMI-A-0
+    DisplayPort-0
+    DisplayPort-1
 5) Run the script in another terminal (you cannot run it as a script in OBS's script loader)
 
 If you want to set up an OBS Virtual Camera, you may also need to:

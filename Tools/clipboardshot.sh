@@ -1,0 +1,1 @@
+screenshot-clipboard-only.sh
