@@ -30,19 +30,14 @@ def auto_assign_new_to_workspace(i3, e):
     # Special case for steam apps that aren't given a specific override
     if remap_container_class.startswith('steam_app_') and not remaps[remap_container_class]:
         remap_container_class = 'steam_app_'
-    if 'force_workspace' in settings['ticks']:
-        # Int or None
-        ws_target = settings['ticks']['force_workspace']
-        if ws_target:
-            try:
-                ws_target = int(ws_target)
-            except ValueError:
-                logger.error(f"Could not convert force_workspace target '{ws_target}' to integer! Fall back to default")
-                ws_target = remaps[remap_container_class]
-        # Consume the tick
-        del settings['ticks']['force_workspace']
-    else:
+    # Default remapping ONLY applies to first window of given class
+    ws_target = None
+    if len(i3.get_tree().find_classed(container_class)) < 2:
         ws_target = remaps[remap_container_class]
+    if 'no_default' in settings['ticks']:
+        ws_target = None
+        # Clear the signal
+        del settings['ticks']['no_default']
     logger.debug(f"Seeking container-workspace mapping for container {container_class} and target {ws_target}")
 
     # Determine if mapped class or not

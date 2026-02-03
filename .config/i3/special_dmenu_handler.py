@@ -1,3 +1,5 @@
+import i3ipc
+
 import copy
 import datetime
 import json
@@ -5,8 +7,11 @@ import logging
 import os
 import pathlib
 import subprocess
+from typing import List, Optional, Tuple, Union
 
 logger = logging.getLogger(__name__)
+
+i3 = i3ipc.Connection()
 
 base_path = pathlib.Path(os.getenv('HOME')) / '.config' / 'i3'
 config_path = base_path / "settings.json"
@@ -16,7 +21,9 @@ DATETIME_FORMAT='%Y-%m-%d %H:%M:%S'
 # Original dmenu_run is a bash script a la:
 # dmenu_path | dmenu "${@}" | ${SHELL:-"/bin/sh"} &
 
-def update_dmenu_settings(fname, fpath):
+def update_dmenu_settings(fname: str,
+                          fpath: Union[pathlib.Path, str],
+                          ) -> List[str]:
     with open(fpath,'r') as f:
         lines = f.readlines()
     injections = list()
@@ -30,7 +37,7 @@ def update_dmenu_settings(fname, fpath):
             injections.append(addition)
     return injections
 
-def populate_options():
+def populate_options() -> str:
     # Get user's choice but allow intercepting it prior to fork for extra directives
     # Pass in my os.environ to hopefully include directories I add to PATH
     if 'dmenu_path_addition' in settings:
@@ -128,10 +135,15 @@ def populate_options():
     choice = subprocess.check_output(("dmenu"), input=dmenu_choices, text=True).rstrip()
     return choice
 
-def process_choice(choice):
+def process_choice(choice: str,
+                   ) -> Tuple[Optional[int],
+                              Optional[str],
+                              Optional[str],
+                              Optional[List[str]],
+                              bool]:
     logger.debug(f"Processing choice: {choice}")
     # Default everything to None / off
-    program = recency_program = prog_args = signal = None
+    signal = program = recency_program = prog_args = None
     silent_terminal = False
 
     # Regex doesn't do the split the way I want, so implement my own split here
@@ -202,24 +214,40 @@ def process_choice(choice):
     # Tidy up with validation
     if signal is not None:
         try:
-            signal_int = int(signal)
+            signal = int(signal)
             # Space-pad to properly fill in i3-msg
-            signal = f" {signal}"
+            #signal = f" {signal}"
         except ValueError:
             logger.error(f"Could not convert indicated monitor signal (via @) '{signal}' to integer")
-            signal = ""
+            signal = None
 
     logger.debug(f"Dmenu selects program '{program}' with monitor signal value '{signal}' and arguments '{prog_args}'")
     return signal, program, recency_program, prog_args, silent_terminal
 
-def launch(signal, program, recency_program, prog_args, silent_terminal):
+def launch(signal: Optional[int],
+           program: Optional[str],
+           recency_program: Optional[str],
+           prog_args: Optional[List[str]],
+           silent_terminal: bool,
+           ) -> None:
     # Send message to automanager via tick
     if signal is not None:
-        automanager_signal = f"automanager::force_workspace{signal}"
-        logger.debug(f"Send signal '{automanager_signal}' to automanager")
-        status = subprocess.run(("i3-msg", "-t", "send_tick", automanager_signal))
+        # Have to find the one
+        for ws in i3.get_tree().workspaces():
+            if ':' not in ws.name:
+                ws_num = int(ws.name)
+            else:
+                ws_num = int(ws.name.split(':',1)[0])
+            if ws_num == signal:
+                # Just change the workspace HERE
+                status = i3.command(f"workspace \"{ws.name}\"")
+                if not status[0].success:
+                    logger.error(status[0].error)
+                break
+        # But should signal automanager to NOT override with a default if it would apply
+        status = subprocess.run(("i3-msg", "-t", "send_tick", f"automanager::no_default"))
         if status.returncode != 0:
-            logger.error(status.returncode)
+            logger.error(f"Failed to signal automanager: {status.returncode}")
     # Update recency settings
     if 'dmenu_recency' not in settings:
         settings['dmenu_recency'] = list()
@@ -238,7 +266,7 @@ def launch(signal, program, recency_program, prog_args, silent_terminal):
     proc = subprocess.Popen(program)
     # If these aren't the same, it's a terminal that will execvp or something;
     # You can only detach if you own the process ID created by the program!
-    if program == recency_program:
+    if program == recency_program and hasattr(proc, 'detach'):
         proc.detach()
     # While I would like to "hide" a silent_terminal here, what I've managed to
     # do is instead just drop the post-script part that waits for the user to
