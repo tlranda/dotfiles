@@ -32,9 +32,9 @@ class i3OBSManager:
         print(f"Found steam games: {self.known_steam_apps}")
 
         # Set up AIO loop
-        loop = asyncio.new_event_loop()
-        loop.run_until_complete(self.make_connections())
-        loop.run_forever() # Hold event loop open
+        self.loop = asyncio.new_event_loop()
+        self.loop.run_until_complete(self.make_connections())
+        self.loop.run_forever() # Hold event loop open until stop() is called
 
     async def make_connections(self):
         parameters = simpleobsws.IdentificationParameters()
@@ -70,6 +70,7 @@ class i3OBSManager:
         self.i3.on(Event.WORKSPACE_FOCUS, self.on_workspace_focus)
         self.i3.on(Event.WORKSPACE_FOCUS, self.rename_playing)
         self.i3.on(Event.WINDOW_FOCUS, self.rename_playing)
+        self.i3.on(Event.WINDOW_CLOSE, self.maybe_shutdown)
 
         print("Ready!")
 
@@ -112,6 +113,13 @@ class i3OBSManager:
                     }
             req = simpleobsws.Request('SetSceneItemEnabled', data)
             result = await self.ws.call(req)
+
+    async def maybe_shutdown(self, i3, event):
+        print("Maybe shutdown called!")
+        if hasattr(event, 'container'):
+            container_name = event.container.window_class
+            if container_name == "obs":
+                self.loop.stop()
 
 i3OBSManager()
 
