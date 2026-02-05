@@ -13,6 +13,9 @@ else
     # Run command with selected desktop background
     eval ${i3lockcmd} &
 fi
-sleep 4 # Wait 4 seconds
-xset dpms force standby # Force monitors to turn off
+# Pass any argument to sleeplock to prevent it from auto-sleeping displays
+if [[ $# -eq 0 ]]; then
+    sleep 4 # Wait 4 seconds
+    xset dpms force standby # Force monitors to turn off
+fi
 wait

@@ -14,12 +14,14 @@ logger = logging.getLogger(__name__)
 i3 = i3ipc.Connection()
 
 base_path = pathlib.Path(os.getenv('HOME')) / '.config' / 'i3'
-config_path = base_path / "settings.json"
+config_path = base_path / f"{os.environ['USER']}_settings.json"
 
 DATETIME_FORMAT='%Y-%m-%d %H:%M:%S'
 
 # Original dmenu_run is a bash script a la:
 # dmenu_path | dmenu "${@}" | ${SHELL:-"/bin/sh"} &
+
+# TODO: Allow commandline args to set values for launch() directly
 
 def update_dmenu_settings(fname: str,
                           fpath: Union[pathlib.Path, str],
@@ -276,7 +278,7 @@ def launch(signal: Optional[int],
 if __name__ == '__main__':
     global settings
 
-    logging.basicConfig(filename=base_path / "logs" / "special_dmenu_handler.log",
+    logging.basicConfig(filename=base_path / "logs" / f"{os.environ['USER']}_special_dmenu_handler.log",
                         level=logging.DEBUG,
                         format="%(asctime)s %(levelname)s: %(message)s",
                         datefmt=DATETIME_FORMAT)

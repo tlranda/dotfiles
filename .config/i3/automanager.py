@@ -166,11 +166,11 @@ def main():
     global settings
 
     base_path = pathlib.Path(os.getenv('HOME')) / '.config' / 'i3'
-    logging.basicConfig(filename=base_path / "logs" / "automanager.log",
+    logging.basicConfig(filename=base_path / "logs" / f"{os.environ['USER']}_automanager.log",
                         level=logging.DEBUG,
                         format="%(asctime)s %(levelname)s: %(message)s",
                         datefmt='%Y-%m-%d %H:%M:%S')
-    config_path = base_path / "settings.json"
+    config_path = base_path / f"{os.environ['USER']}_settings.json"
     logger.info(f"Fetch configuration from '{config_path}'")
     with open(config_path,"r") as f:
         settings = json.load(f)

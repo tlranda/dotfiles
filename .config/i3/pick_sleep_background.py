@@ -16,8 +16,8 @@ import time
 from collections import OrderedDict
 
 default_base_path = pathlib.Path(os.getenv('HOME')) / '.config' / 'i3'
-default_log_path = default_base_path / "logs" / "pick_sleep_background.log"
-default_config_path = default_base_path / "sleep_history.json"
+default_log_path = default_base_path / "logs" / f"{os.environ['USER']}_pick_sleep_background.log"
+default_config_path = default_base_path / f"{os.environ['USER']}_sleep_history.json"
 
 # i3lock only supports PNGs
 SUPPORTED_FILETYPES = ['.png']
@@ -26,6 +26,10 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 # IMPORTANT: If errors occur, log them, but do not stdout anything.
 # The white default lock screen is a signal to the user that an error occurred
 # and they can check the logs for details.
+
+
+# TODO:
+# Move cache path and other overlay constants up to top
 
 logger = logging.getLogger(__name__)
 # I don't allow logging to be configured by argparse so shove it all up here at the top

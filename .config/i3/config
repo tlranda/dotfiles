@@ -62,7 +62,7 @@ workspace $ws6 output DisplayPort-1
 #assign [class="^obsidian$"] number 1
 #assign [class="^firefox_firefox$"] number 3
 #assign [class="^discord$"] number 3
-#assign [class="^obs$"] number 5
+#assign [class="^obs$"] number 1
 #assign [class="^kdenlive$"] number 5
 #assign [class="^steam$"] number 5
 #assign [class="^Lutris$"] number 5
@@ -89,6 +89,8 @@ bindsym $altmod+s exec --no-startup-id ${HOME}/Tools/screenshot.sh
 bindsym $altmod+Shift+s exec --no-startup-id ${HOME}/Tools/screenshot.sh --select
 bindsym $altmod+z exec --no-startup-id ${HOME}/Tools/clipboardshot.sh
 bindsym $altmod+Shift+z exec --no-startup-id ${HOME}/Tools/clipboardshot.sh --select
+# control+alt+shift+s save replay buffer in OBS
+# control+alt+shift+z enable/disable OBS replay buffer (auto-enabled if running under autostart)
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
