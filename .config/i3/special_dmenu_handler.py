@@ -1,5 +1,6 @@
 import i3ipc
 
+import argparse
 import copy
 import datetime
 import json
@@ -255,7 +256,8 @@ def launch(signal: Optional[int],
         settings['dmenu_recency'] = list()
     if recency_program in settings['dmenu_recency']:
         settings['dmenu_recency'].remove(recency_program)
-    settings['dmenu_recency'].insert(0,recency_program)
+    if recency_program is not None:
+        settings['dmenu_recency'].insert(0,recency_program)
     with open(config_path, 'w') as f:
         json.dump(settings, f, indent=1)
 
@@ -274,6 +276,24 @@ def launch(signal: Optional[int],
     # do is instead just drop the post-script part that waits for the user to
     # shut it down. Perhaps I can move it to some 'junk' workspace that won't
     # be bothersome?
+
+def build() -> argparse.ArgumentParser:
+    prs = argparse.ArgumentParser()
+    prs.add_argument('--workspace', type=int, default=None, help="Workspace to launch on")
+    prs.add_argument('--program', type=str, default=None, help="Program to execute")
+    prs.add_argument('--recency-program', type=str, default=None, help="Specify == program if detach() should be called (ie: terminals)")
+    prs.add_argument('--args', type=str, nargs="*", default=None, action='append', help="Arguments to the program")
+    prs.add_argument('--silent-terminal', action='store_true', help="Hide terminals -- TBD feature")
+    return prs
+
+def parse(args: Optional[argparse.Namespace] = None,
+          prs: Optional[argparse.ArgumentParser] = None,
+          ) -> argparse.Namespace:
+    if prs is None:
+        prs = build()
+    if args is None:
+        args = prs.parse_args()
+    return args
 
 if __name__ == '__main__':
     global settings
@@ -295,5 +315,31 @@ if __name__ == '__main__':
         except:
             logger.error(f"Tried to unlink dmenu_path cache at '{cached_path}', but failed")
 
-    launch(*process_choice(populate_options()))
+    args = parse()
+    if args.program is not None:
+        if args.workspace is not None:
+            # Have to find the one
+            for ws in i3.get_tree().workspaces():
+                if ':' not in ws.name:
+                    ws_num = int(ws.name)
+                else:
+                    ws_num = int(ws.name.split(':',1)[0])
+                if ws_num == args.workspace:
+                    # Just change the workspace HERE
+                    status = i3.command(f"workspace \"{ws.name}\"")
+                    if not status[0].success:
+                        logger.error(status[0].error)
+                    break
+            else:
+                status = i3.command(f"workspace \"{args.workspace}\"")
+                if not status[0].success:
+                    logger.error(status[0].error)
+        launch(args.workspace,
+               args.program,
+               args.recency_program,
+               args.args,
+               args.silent_terminal,
+               )
+    else:
+        launch(*process_choice(populate_options()))
 
