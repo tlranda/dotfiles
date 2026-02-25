@@ -6,6 +6,11 @@ import pandas as pd
 # it is easy to request and actually provides a lot of value that is harder to
 # replicate separately
 
+# NOTE: Unix permissions 775 needed on all paths at/above images for ExifTool
+# to be able to write its data out to disk. Images of course need read permission.
+# Windows is likely similar.
+
+
 # Builtin libraries  -- no extra installations required
 import argparse
 from collections import defaultdict
@@ -259,6 +264,7 @@ def exiftool_map_from_database(csv_path: pathlib.Path,
         disk_paths = [path]
     # TODO: When this works, consider a flag for adding the overwrite original behavior
     cmd = [exiftool_path, f'-csv={csv_path}']+[f'-{tag}' for tag in exiftool_mappings.keys()]+[str(_) for _ in disk_paths]
+    print(" ".join([str(_) for _ in cmd]))
     # Batch-call ExifTool on all indicated files
     # This works from command line but not in program
     proc = subprocess.run(cmd)
@@ -276,6 +282,7 @@ def exiftool_map_from_disk(disk_paths: Optional[Union[pathlib.Path, List[pathlib
 
     # Batch-call ExifTool on all indicated files
     cmd = [str(exiftool_path), '-r', '-csv', '-Artist', '-Source', '-URL', '-Description']+[str(_) for _ in disk_paths]
+    print(" ".join([str(_) for _ in cmd]))
     proc = subprocess.run(cmd, capture_output=True)
     if proc.returncode != 0:
         raise ValueError(f"ExifTool return code: {proc.returncode}")
